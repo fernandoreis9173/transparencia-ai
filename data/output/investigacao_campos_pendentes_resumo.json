@@ -1,0 +1,17 @@
+{
+    "ano": 2025,
+    "cod_orgao": 48000,
+    "cod_funcao": 12,
+    "favorecidos_analisados": 50,
+    "empenhos_analisados": 110,
+    "registros_encontrados": 110,
+    "encontrou_vl_reforco_gt_0": false,
+    "encontrou_vl_anulacao_gt_0": false,
+    "indicadores_restos_encontrados": [
+        "E"
+    ],
+    "quantidade_indicadores_restos": 1,
+    "encontrou_cod_item": false,
+    "formula_testada": true,
+    "arquivo_resultado": "data/output\\investigacao_campos_pendentes.csv"
+}

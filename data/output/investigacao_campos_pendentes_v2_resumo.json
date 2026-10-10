@@ -1,0 +1,19 @@
+{
+  "versao": "v2",
+  "ano": 2025,
+  "gerado_em": "2026-10-08T08:01:48",
+  "candidatos_processados": 270,
+  "evidencias": 1328,
+  "requisicoes_http": 397,
+  "erros_http": 3,
+  "reforco_encontrado": false,
+  "anulacao_encontrada": false,
+  "cod_item_encontrado": true,
+  "indicadores_restos": [
+    "E"
+  ],
+  "quantidade_indicadores_restos": 1,
+  "empenhos_com_movimentacao": 0,
+  "formula_ok_com_movimentacao": 0,
+  "criterio_parada": false
+}

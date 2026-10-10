@@ -1,0 +1,93 @@
+
+@if (carregando) {
+  <div class="summary-grid">
+    @for (item of [1, 2, 3, 4]; track item) {
+      <div class="summary-card skeleton-card">
+        <div class="skeleton skeleton-label"></div>
+        <div class="skeleton skeleton-value"></div>
+        <div class="skeleton skeleton-footer"></div>
+      </div>
+    }
+  </div>
+} @else if (erro) {
+  <div class="alert alert-danger d-flex justify-content-between align-items-center">
+    <span>Não foi possível carregar os indicadores financeiros.</span>
+    <button class="btn btn-outline-danger btn-sm" (click)="tentarNovamente()">
+      Tentar novamente
+    </button>
+  </div>
+} @else if (resumo) {
+  <div class="summary-grid">
+    <article class="summary-card">
+      <div class="card-top">
+        <span class="card-label">Total empenhado</span>
+        <span class="icon-box blue">
+          <i class="bi bi-wallet2"></i>
+        </span>
+      </div>
+
+      <div class="card-value">
+        {{ resumo.total_empenhado | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}
+      </div>
+
+      <div class="card-footer">
+        <i class="bi bi-receipt"></i>
+        {{ resumo.quantidade_empenhos }} empenhos na amostra
+      </div>
+    </article>
+
+    <article class="summary-card">
+      <div class="card-top">
+        <span class="card-label">Total liquidado</span>
+        <span class="icon-box purple">
+          <i class="bi bi-file-earmark-check"></i>
+        </span>
+      </div>
+
+      <div class="card-value">
+        {{ resumo.total_liquidado | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}
+      </div>
+
+      <div class="card-footer">
+        <i class="bi bi-check2-circle"></i>
+        Valores liquidados registrados
+      </div>
+    </article>
+
+    <article class="summary-card">
+      <div class="card-top">
+        <span class="card-label">Total pago</span>
+        <span class="icon-box green">
+          <i class="bi bi-cash-coin"></i>
+        </span>
+      </div>
+
+      <div class="card-value">
+        {{ resumo.total_pago | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}
+      </div>
+
+      <div class="card-footer">
+        <i class="bi bi-check-circle"></i>
+        Pagamentos registrados
+      </div>
+    </article>
+
+    <article class="summary-card">
+      <div class="card-top">
+        <span class="card-label">Anomalias para análise</span>
+        <span class="icon-box orange">
+          <i class="bi bi-exclamation-triangle"></i>
+        </span>
+      </div>
+
+      <div class="card-value">
+        {{ resumo.quantidade_anomalias }}
+      </div>
+
+      <div class="card-footer warning-text">
+        <i class="bi bi-search"></i>
+        Registros que precisam ser verificados
+      </div>
+    </article>
+  </div>
+}

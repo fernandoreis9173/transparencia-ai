@@ -1,0 +1,74 @@
+[
+  {
+    "url": "https://www.transparencia.sp.gov.br/ruxitagentjs_ICA7NQVfqrux_10345260810170330.js",
+    "tamanho": 290320
+  },
+  {
+    "url": "https://www.googletagmanager.com/gtag/js?id=G-GT3CSRE0S3",
+    "tamanho": 529061
+  },
+  {
+    "url": "https://sp.gov.br/statics/js/script-acessibilidade.js",
+    "tamanho": 3330
+  },
+  {
+    "url": "https://cse.google.com/cse.js?cx=001670844406597591855:yjinzrmxins",
+    "tamanho": 9708
+  },
+  {
+    "url": "https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js",
+    "tamanho": 5537
+  },
+  {
+    "url": "https://www.transparencia.sp.gov.br/Content/js/jquery-3.7.1.js",
+    "tamanho": 296030
+  },
+  {
+    "url": "https://www.transparencia.sp.gov.br/Content/js/popper.min.js",
+    "tamanho": 20342
+  },
+  {
+    "url": "https://www.transparencia.sp.gov.br/Content/js/bootstrap.min.js",
+    "tamanho": 58078
+  },
+  {
+    "url": "https://www.transparencia.sp.gov.br/Content/js/parallax.min.js",
+    "tamanho": 6873
+  },
+  {
+    "url": "https://www.transparencia.sp.gov.br/Content/js/imagesloaded.pkgd.min.js",
+    "tamanho": 5600
+  },
+  {
+    "url": "https://www.transparencia.sp.gov.br/Content/js/isotope.pkgd.min.js",
+    "tamanho": 58028
+  },
+  {
+    "url": "https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js",
+    "tamanho": 87267
+  },
+  {
+    "url": "https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap5.min.js",
+    "tamanho": 2358
+  },
+  {
+    "url": "https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js",
+    "tamanho": 71840
+  },
+  {
+    "url": "https://www.transparencia.sp.gov.br/Content/slider/js/plugins/plugins.js",
+    "tamanho": 121695
+  },
+  {
+    "url": "https://www.transparencia.sp.gov.br/Content/slider/js/active.js",
+    "tamanho": 4852
+  },
+  {
+    "url": "https://www.transparencia.sp.gov.br/Content/colorbox/jquery.colorbox.js",
+    "tamanho": 29486
+  },
+  {
+    "url": "https://vlibras.gov.br/app/vlibras-plugin.js",
+    "tamanho": 2362
+  }
+]

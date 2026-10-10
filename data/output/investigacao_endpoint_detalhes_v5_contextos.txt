@@ -1,0 +1,2122 @@
+
+====================================================================================================
+SCRIPT INLINE #11
+TERMO: /Despesas/
+====================================================================================================
+ $('#filtroCodFuncao').val('');
+
+                        $('#filtroCodSubfuncao').val('');
+
+                        roteiroSelecao.orgao = null;
+
+                        roteiroSelecao.elemento = null;
+
+                        roteiroSelecao.funcao = null;
+
+                        roteiroSelecao.subfuncao = null;
+
+                    }
+
+
+
+                    atualizarCabecalhoNivel();
+
+                    atualizarTextoNavegacao(tipo);
+
+                });
+
+
+
+                $(document).on('click', 'a.js-drilldown', function (e) {
+
+                    e.preventDefault();
+
+                    const codigo = $(this).data('codigo');
+
+                    const nome = ($(this).text() || '').trim();
+
+                    abrirProximoNivel(codigo, nome);
+
+                });
+
+
+
+                $('#btnVoltarNivel').on('click', function () {
+
+                    voltarNivelAnterior();
+
+                });
+
+            });
+
+
+
+            function carregarCombos() {
+
+                return $.get('/Despesas/Combos', function (data) {
+
+                    $('#filtroAnoExercicio option:not(:first)').remove();
+
+                    (data.anos || []).forEach(a => {
+
+                        $('#filtroAnoExercicio').append(`<option value="${a.id}">${a.nome}</option>`);
+
+                    });
+
+                });
+
+            }
+
+
+
+            function carregarFiltroDinamico() {
+
+                const tipo = obterTipoRetornoSelecionado();
+
+                if (tipo === 'favorecido') {
+
+                    return;
+
+                }
+
+
+
+                const valorAtual = obterValorFiltroAtivo(tipo);
+
+                const payload = montarFiltroBase();
+
+                if (!payload) {
+
+                    return;
+
+                }
+
+
+
+                $.ajax({
+
+                    url: '/Despesas/Filtro',
+
+                    type: 'POST',
+
+                    contentType: 'application/json',
+
+                    data: JSON.stringify(payload),
+
+                    success: function (res) {
+
+                        const itens = (res && res.itens) || [];
+
+                        const select = $('#filtroValor');
+
+                        select.empty();
+
+                        select.append('<option value="">Todos</option>');
+
+
+
+                        itens.forEach(function (item) {
+
+                            select.append(`<option value="${escapeHtml(item.id)}">${escapeHtml(item.nome)}</option>`);
+
+                        });
+
+
+
+                        if (valorAtual) {
+
+                            select.val(String(valorAtual));
+
+                        }
+
+                    },
+
+                    error: function () {
+
+                        $('#filtroValor').html('<option value="">Todos</option>');
+
+                    }
+
+                });
+
+            }
+
+
+
+       
+
+
+====================================================================================================
+SCRIPT INLINE #11
+TERMO: /Despesas/
+====================================================================================================
+    $('#btnVoltarNivel').on('click', function () {
+
+                    voltarNivelAnterior();
+
+                });
+
+            });
+
+
+
+            function carregarCombos() {
+
+                return $.get('/Despesas/Combos', function (data) {
+
+                    $('#filtroAnoExercicio option:not(:first)').remove();
+
+                    (data.anos || []).forEach(a => {
+
+                        $('#filtroAnoExercicio').append(`<option value="${a.id}">${a.nome}</option>`);
+
+                    });
+
+                });
+
+            }
+
+
+
+            function carregarFiltroDinamico() {
+
+                const tipo = obterTipoRetornoSelecionado();
+
+                if (tipo === 'favorecido') {
+
+                    return;
+
+                }
+
+
+
+                const valorAtual = obterValorFiltroAtivo(tipo);
+
+                const payload = montarFiltroBase();
+
+                if (!payload) {
+
+                    return;
+
+                }
+
+
+
+                $.ajax({
+
+                    url: '/Despesas/Filtro',
+
+                    type: 'POST',
+
+                    contentType: 'application/json',
+
+                    data: JSON.stringify(payload),
+
+                    success: function (res) {
+
+                        const itens = (res && res.itens) || [];
+
+                        const select = $('#filtroValor');
+
+                        select.empty();
+
+                        select.append('<option value="">Todos</option>');
+
+
+
+                        itens.forEach(function (item) {
+
+                            select.append(`<option value="${escapeHtml(item.id)}">${escapeHtml(item.nome)}</option>`);
+
+                        });
+
+
+
+                        if (valorAtual) {
+
+                            select.val(String(valorAtual));
+
+                        }
+
+                    },
+
+                    error: function () {
+
+                        $('#filtroValor').html('<option value="">Todos</option>');
+
+                    }
+
+                });
+
+            }
+
+
+
+            function configurarTipoRetorno(tipo, limparNavegacao) {
+
+                const normalizado = (tipo || 'orgao').toLowerCase();
+
+                $('#filtroTipoRetorno').val(normalizado);
+
+                etapaAtual = normalizado === 'funcao' ? 'funcao' : normalizado;
+
+
+
+                if (limparNavegacao) {
+
+                    limparDrillDown();
+
+                }
+
+
+
+                atualizarVisibilidadeFiltro(normalizado);
+
+                atualizarCabecalhoNivel();
+
+                atualizarTextoNavegacao(normalizado);
+
+                atualizarBotaoVoltar();
+
+                carregarFiltroDinamico();
+
+
+
+                if (limparNavegacao) {
+
+                    limparResultadosGrid();
+
+                }
+
+            }
+
+
+
+            function atualizarVisibilidadeFiltro(tipo
+
+
+====================================================================================================
+SCRIPT INLINE #11
+TERMO: /Despesas/
+====================================================================================================
+troCodAcao').val();
+
+                    if (etapaAtual === 'favorecido') return $('#filtroCpfCnpjFavorecido').val();
+
+                    return $('#filtroCodPrograma').val();
+
+                }
+
+                return '';
+
+            }
+
+
+
+            function mostrarAlerta(mensagem) {
+
+                $('#alertaFiltroMensagem').text(mensagem);
+
+                $('#alertaFiltro').removeClass('d-none');
+
+            }
+
+
+
+            function ocultarAlerta() {
+
+                $('#alertaFiltro').addClass('d-none');
+
+            }
+
+
+
+            function buscarDados(page) {
+
+                paginaAtual = page;
+
+                $('#filtroPage').val(paginaAtual);
+
+                const filtro = montarFiltro(paginaAtual);
+
+                if (!filtro) {
+
+                    return;
+
+                }
+
+
+
+                const spinner = $('#spinnerBusca');
+
+                ocultarAlerta();
+
+                spinner.removeClass('d-none');
+
+
+
+                $.ajax({
+
+                    url: '/Despesas/Buscar',
+
+                    type: 'POST',
+
+                    contentType: 'application/json',
+
+                    data: JSON.stringify(filtro),
+
+                    success: function (res) {
+
+                        etapaAtual = (res.etapaAtual || etapaAtual || 'funcao').toLowerCase();
+
+                        renderGrid(res.items || []);
+
+                        renderPaginacao(res.page, res.totalPages, '#paginacao');
+
+                        renderPaginacao(res.page, res.totalPages, '#paginacao-bottom');
+
+                        atualizarInfoPaginacao(res.page, res.totalPages, res.totalItems, res.pageSize);
+
+                        atualizarCabecalhoNivel();
+
+                        atualizarVisibilidadeFiltro(obterTipoRetornoSelecionado());
+
+                        atualizarTextoNavegacao($('#filtroTipoRetorno').val());
+
+                        atualizarBotaoVoltar();
+
+                        const tipoAtual = obterTipoRetornoSelecionado();
+
+                        if ((tipoAtual === 'funcao' || tipoAtual === 'orgao' || tipoAtual === 'programa') && etapaAtual !== 'empenho') {
+
+                            carregarFiltroDinamico();
+
+                        }
+
+                        $('#lblDataAtualiza').text(res.ultimaAtualizacao ? new Date(res.ultimaAtualizacao).toLocaleString('pt-BR') : 'Nao disponivel');
+
+
+
+                        if ((res.totalItems || 0) > 0) {
+
+                            $('#btnExportarCsv').show();
+
+                            $('#btnExportarPdf').show();
+
+                        } else {
+
+                            $('#btnExportarCsv').hide();
+
+                            $('#btnExportarPdf').hide();
+
+                        }
+
+
+
+                        spinner.addClass('d-none');
+
+                    },
+
+                    e
+
+
+====================================================================================================
+SCRIPT INLINE #11
+TERMO: /Despesas/
+====================================================================================================
+mensagem);
+
+                        }
+
+
+
+                        return response.blob();
+
+                    })
+
+                    .then(blob => {
+
+                        const objectUrl = URL.createObjectURL(blob);
+
+                        const a = document.createElement('a');
+
+                        a.href = objectUrl;
+
+                        a.download = nomeArquivo;
+
+                        document.body.appendChild(a);
+
+                        a.click();
+
+                        a.remove();
+
+                        URL.revokeObjectURL(objectUrl);
+
+                    })
+
+                    .catch(err => mostrarAlerta(err.message))
+
+                    .finally(() => {
+
+                        spinner.addClass('d-none');
+
+                        alternarEstadoExportacao(false);
+
+                    });
+
+            }
+
+
+
+            function exportarCsv() {
+
+                const data = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+
+                baixarArquivo('/Despesas/ExportarCsv', `despesas_${data}.csv`);
+
+            }
+
+
+
+            function exportarPdf() {
+
+                const data = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+
+                baixarArquivo('/Despesas/ExportarPdf', `despesas_${data}.pdf`);
+
+            }
+
+
+
+            function formatarMoeda(valor) {
+
+                const numero = Number(valor || 0);
+
+                return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(numero);
+
+            }
+
+
+
+            function escapeHtml(value) {
+
+                if (value === null || value === undefined) return '';
+
+                return String(value)
+
+                    .replace(/&/g, '&amp;')
+
+                    .replace(/</g, '&lt;')
+
+                    .replace(/>/g, '&gt;')
+
+                    .replace(/"/g, '&quot;')
+
+                    .replace(/'/g, '&#39;');
+
+            }
+
+        
+
+
+====================================================================================================
+SCRIPT INLINE #11
+TERMO: /Despesas/
+====================================================================================================
+                      const a = document.createElement('a');
+
+                        a.href = objectUrl;
+
+                        a.download = nomeArquivo;
+
+                        document.body.appendChild(a);
+
+                        a.click();
+
+                        a.remove();
+
+                        URL.revokeObjectURL(objectUrl);
+
+                    })
+
+                    .catch(err => mostrarAlerta(err.message))
+
+                    .finally(() => {
+
+                        spinner.addClass('d-none');
+
+                        alternarEstadoExportacao(false);
+
+                    });
+
+            }
+
+
+
+            function exportarCsv() {
+
+                const data = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+
+                baixarArquivo('/Despesas/ExportarCsv', `despesas_${data}.csv`);
+
+            }
+
+
+
+            function exportarPdf() {
+
+                const data = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+
+                baixarArquivo('/Despesas/ExportarPdf', `despesas_${data}.pdf`);
+
+            }
+
+
+
+            function formatarMoeda(valor) {
+
+                const numero = Number(valor || 0);
+
+                return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(numero);
+
+            }
+
+
+
+            function escapeHtml(value) {
+
+                if (value === null || value === undefined) return '';
+
+                return String(value)
+
+                    .replace(/&/g, '&amp;')
+
+                    .replace(/</g, '&lt;')
+
+                    .replace(/>/g, '&gt;')
+
+                    .replace(/"/g, '&quot;')
+
+                    .replace(/'/g, '&#39;');
+
+            }
+
+        
+
+
+====================================================================================================
+SCRIPT INLINE #11
+TERMO: $.ajax
+====================================================================================================
+
+                });
+
+
+
+                $('#btnVoltarNivel').on('click', function () {
+
+                    voltarNivelAnterior();
+
+                });
+
+            });
+
+
+
+            function carregarCombos() {
+
+                return $.get('/Despesas/Combos', function (data) {
+
+                    $('#filtroAnoExercicio option:not(:first)').remove();
+
+                    (data.anos || []).forEach(a => {
+
+                        $('#filtroAnoExercicio').append(`<option value="${a.id}">${a.nome}</option>`);
+
+                    });
+
+                });
+
+            }
+
+
+
+            function carregarFiltroDinamico() {
+
+                const tipo = obterTipoRetornoSelecionado();
+
+                if (tipo === 'favorecido') {
+
+                    return;
+
+                }
+
+
+
+                const valorAtual = obterValorFiltroAtivo(tipo);
+
+                const payload = montarFiltroBase();
+
+                if (!payload) {
+
+                    return;
+
+                }
+
+
+
+                $.ajax({
+
+                    url: '/Despesas/Filtro',
+
+                    type: 'POST',
+
+                    contentType: 'application/json',
+
+                    data: JSON.stringify(payload),
+
+                    success: function (res) {
+
+                        const itens = (res && res.itens) || [];
+
+                        const select = $('#filtroValor');
+
+                        select.empty();
+
+                        select.append('<option value="">Todos</option>');
+
+
+
+                        itens.forEach(function (item) {
+
+                            select.append(`<option value="${escapeHtml(item.id)}">${escapeHtml(item.nome)}</option>`);
+
+                        });
+
+
+
+                        if (valorAtual) {
+
+                            select.val(String(valorAtual));
+
+                        }
+
+                    },
+
+                    error: function () {
+
+                        $('#filtroValor').html('<option value="">Todos</option>');
+
+                    }
+
+                });
+
+            }
+
+
+
+            function configurarTipoRetorno(tipo, limparNavegacao) {
+
+                const normalizado = (tipo || 'orgao').toLowerCase();
+
+                $('#filtroTipoRetorno').val(normalizado);
+
+                etapaAtual = normalizado === 'funcao' ? 'funcao' : normalizado;
+
+
+
+                if (limparNavegacao) {
+
+                    limparDrillDown();
+
+                }
+
+
+
+                atualizarVisibilidadeFiltro(normalizado);
+
+                atualizarCabecalhoNivel();
+
+                atualizarTextoNavegacao(normalizado);
+
+                atualizarBotaoVoltar();
+
+                carregarFiltroDinamico();
+
+
+
+                if (limparNavegacao) {
+
+                    limparResultadosGrid();
+
+                }
+
+            }
+
+
+
+            funct
+
+
+====================================================================================================
+SCRIPT INLINE #11
+TERMO: $.ajax
+====================================================================================================
+tapaAtual === 'acao') return $('#filtroCodAcao').val();
+
+                    if (etapaAtual === 'favorecido') return $('#filtroCpfCnpjFavorecido').val();
+
+                    return $('#filtroCodPrograma').val();
+
+                }
+
+                return '';
+
+            }
+
+
+
+            function mostrarAlerta(mensagem) {
+
+                $('#alertaFiltroMensagem').text(mensagem);
+
+                $('#alertaFiltro').removeClass('d-none');
+
+            }
+
+
+
+            function ocultarAlerta() {
+
+                $('#alertaFiltro').addClass('d-none');
+
+            }
+
+
+
+            function buscarDados(page) {
+
+                paginaAtual = page;
+
+                $('#filtroPage').val(paginaAtual);
+
+                const filtro = montarFiltro(paginaAtual);
+
+                if (!filtro) {
+
+                    return;
+
+                }
+
+
+
+                const spinner = $('#spinnerBusca');
+
+                ocultarAlerta();
+
+                spinner.removeClass('d-none');
+
+
+
+                $.ajax({
+
+                    url: '/Despesas/Buscar',
+
+                    type: 'POST',
+
+                    contentType: 'application/json',
+
+                    data: JSON.stringify(filtro),
+
+                    success: function (res) {
+
+                        etapaAtual = (res.etapaAtual || etapaAtual || 'funcao').toLowerCase();
+
+                        renderGrid(res.items || []);
+
+                        renderPaginacao(res.page, res.totalPages, '#paginacao');
+
+                        renderPaginacao(res.page, res.totalPages, '#paginacao-bottom');
+
+                        atualizarInfoPaginacao(res.page, res.totalPages, res.totalItems, res.pageSize);
+
+                        atualizarCabecalhoNivel();
+
+                        atualizarVisibilidadeFiltro(obterTipoRetornoSelecionado());
+
+                        atualizarTextoNavegacao($('#filtroTipoRetorno').val());
+
+                        atualizarBotaoVoltar();
+
+                        const tipoAtual = obterTipoRetornoSelecionado();
+
+                        if ((tipoAtual === 'funcao' || tipoAtual === 'orgao' || tipoAtual === 'programa') && etapaAtual !== 'empenho') {
+
+                            carregarFiltroDinamico();
+
+                        }
+
+                        $('#lblDataAtualiza').text(res.ultimaAtualizacao ? new Date(res.ultimaAtualizacao).toLocaleString('pt-BR') : 'Nao disponivel');
+
+
+
+                        if ((res.totalItems || 0) > 0) {
+
+                            $('#btnExportarCsv').show();
+
+                            $('#btnExportarPdf').show();
+
+                        } else {
+
+                            $('#btnExportarCsv').hide();
+
+                            $('#btnExportarPdf').hide();
+
+                        }
+
+
+
+                        spinner.addClass('d-none');
+
+         
+
+
+====================================================================================================
+SCRIPT INLINE #11
+TERMO: $.get
+====================================================================================================
+        $('#filtroCodFuncao').val('');
+
+                        $('#filtroCodSubfuncao').val('');
+
+                        roteiroSelecao.orgao = null;
+
+                        roteiroSelecao.elemento = null;
+
+                        roteiroSelecao.funcao = null;
+
+                        roteiroSelecao.subfuncao = null;
+
+                    }
+
+
+
+                    atualizarCabecalhoNivel();
+
+                    atualizarTextoNavegacao(tipo);
+
+                });
+
+
+
+                $(document).on('click', 'a.js-drilldown', function (e) {
+
+                    e.preventDefault();
+
+                    const codigo = $(this).data('codigo');
+
+                    const nome = ($(this).text() || '').trim();
+
+                    abrirProximoNivel(codigo, nome);
+
+                });
+
+
+
+                $('#btnVoltarNivel').on('click', function () {
+
+                    voltarNivelAnterior();
+
+                });
+
+            });
+
+
+
+            function carregarCombos() {
+
+                return $.get('/Despesas/Combos', function (data) {
+
+                    $('#filtroAnoExercicio option:not(:first)').remove();
+
+                    (data.anos || []).forEach(a => {
+
+                        $('#filtroAnoExercicio').append(`<option value="${a.id}">${a.nome}</option>`);
+
+                    });
+
+                });
+
+            }
+
+
+
+            function carregarFiltroDinamico() {
+
+                const tipo = obterTipoRetornoSelecionado();
+
+                if (tipo === 'favorecido') {
+
+                    return;
+
+                }
+
+
+
+                const valorAtual = obterValorFiltroAtivo(tipo);
+
+                const payload = montarFiltroBase();
+
+                if (!payload) {
+
+                    return;
+
+                }
+
+
+
+                $.ajax({
+
+                    url: '/Despesas/Filtro',
+
+                    type: 'POST',
+
+                    contentType: 'application/json',
+
+                    data: JSON.stringify(payload),
+
+                    success: function (res) {
+
+                        const itens = (res && res.itens) || [];
+
+                        const select = $('#filtroValor');
+
+                        select.empty();
+
+                        select.append('<option value="">Todos</option>');
+
+
+
+                        itens.forEach(function (item) {
+
+                            select.append(`<option value="${escapeHtml(item.id)}">${escapeHtml(item.nome)}</option>`);
+
+                        });
+
+
+
+                        if (valorAtual) {
+
+                            select.val(String(valorAtual));
+
+                        }
+
+                    },
+
+                    error: function () {
+
+                        $('#filtroValor').html('<option value="">Todos</option>');
+
+                    }
+
+                });
+
+            }
+
+
+
+
+
+
+====================================================================================================
+SCRIPT INLINE #11
+TERMO: fetch(
+====================================================================================================
+Nulo(valor) {
+
+                if (valor === null || valor === undefined || valor === '') {
+
+                    return null;
+
+                }
+
+
+
+                const numero = parseInt(valor, 10);
+
+                return Number.isNaN(numero) ? null : numero;
+
+            }
+
+
+
+            function alternarEstadoExportacao(emProcessamento) {
+
+                exportInProgress = emProcessamento;
+
+                $('#btnExportarCsv').prop('disabled', emProcessamento);
+
+                $('#btnExportarPdf').prop('disabled', emProcessamento);
+
+            }
+
+
+
+            function baixarArquivo(url, nomeArquivo) {
+
+                if (exportInProgress) return;
+
+
+
+                const filtro = montarFiltro(1);
+
+                if (!filtro) {
+
+                    return;
+
+                }
+
+
+
+                const spinner = $('#spinnerBusca');
+
+                ocultarAlerta();
+
+                alternarEstadoExportacao(true);
+
+                spinner.removeClass('d-none');
+
+
+
+                fetch(url, {
+
+                    method: 'POST',
+
+                    headers: { 'Content-Type': 'application/json' },
+
+                    body: JSON.stringify(filtro)
+
+                })
+
+                    .then(async response => {
+
+                        if (!response.ok) {
+
+                            let mensagem = 'Falha ao exportar os dados.';
+
+                            try {
+
+                                const erro = await response.json();
+
+                                mensagem = erro?.mensagem || erro?.message || mensagem;
+
+                            } catch {
+
+                                const texto = await response.text();
+
+                                if (texto) mensagem = texto;
+
+                            }
+
+
+
+                            throw new Error(mensagem);
+
+                        }
+
+
+
+                        return response.blob();
+
+                    })
+
+                    .then(blob => {
+
+                        const objectUrl = URL.createObjectURL(blob);
+
+                        const a = document.createElement('a');
+
+                        a.href = objectUrl;
+
+                        a.download = nomeArquivo;
+
+                        document.body.appendChild(a);
+
+                        a.click();
+
+                        a.remove();
+
+                        URL.revokeObjectURL(objectUrl);
+
+                    })
+
+                    .catch(err => mostrarAlerta(err.message))
+
+                    .finally(() => {
+
+                        spinner.addClass('d-none');
+
+                        alternarEstadoExportacao(false);
+
+                    });
+
+            }
+
+
+
+            function exportarCsv() {
+
+                const data = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+
+                baixarArquivo('/
+
+
+====================================================================================================
+SCRIPT INLINE #11
+TERMO: vl_reforco
+====================================================================================================
+     setText('#detLiquidado', formatarMoeda(item.vl_liquidado));
+
+                setText('#detPago', formatarMoeda(item.vl_pago));
+
+                setText('#detPagoRp', formatarMoeda(item.vl_pago_rp));
+
+
+
+                setText('#detLiquidacaoEmpenhadoAtual', formatarMoeda(empenhadoAtual));
+
+                setText('#detSaldoLiquidar', formatarMoeda(saldoLiquidar));
+
+                setText('#detPercentualLiquidado', formatarPercentual(empenhadoAtual > 0 ? (liquidado / empenhadoAtual) * 100 : 0));
+
+                setText('#detTotalPago', formatarMoeda(totalPago));
+
+                setText('#detSaldoPagar', formatarMoeda(saldoPagar));
+
+                setText('#detPercentualPago', formatarPercentual(liquidado > 0 ? (totalPago / liquidado) * 100 : 0));
+
+
+
+                setText('#detEmpenhadoInicial', formatarMoeda(item.vl_empenhado_inicial));
+
+                setText('#detEmpenhadoAtual', formatarMoeda(item.vl_empenhado));
+
+                setText('#detReforco', formatarMoeda(item.vl_reforco));
+
+                setText('#detAnulacao', formatarMoeda(item.vl_anulacao));
+
+
+
+                setText('#detOutrasInformacoes', item.indicador_restos || 'Nao informado');
+
+                setText('#detOutrasProcesso', item.num_processo || 'Nao informado');
+
+                setText('#detOutrasTipoLicitacao', formatarCodigoNome(item.cod_tipo_licitacao, item.nome_tipo_licitacao));
+
+            }
+
+
+
+            function limparNomeFavorecido(nome) {
+
+                if (nome === null || nome === undefined) {
+
+                    return '';
+
+                }
+
+
+
+                // remove aspas (simples/duplas) e espacos nas extremidades,
+
+                // preservando apostrofos internos legitimos (ex.: EPI'S, LET'S)
+
+                return String(nome).trim().replace(/^["'\s]+|["'\s]+$/g, '').trim();
+
+            }
+
+
+
+            function ehValorAusente(valor) {
+
+                if (valor === null || valor === undefined) {
+
+                    return true;
+
+                }
+
+
+
+                const texto = String(valor).trim().toLowerCase();
+
+                return texto === '' || texto === 'null' || texto === '-'
+
+                    || texto === 'nao informado' || texto === 'não informado';
+
+            }
+
+
+
+            function formatarCodigoNome(codigo, nome) {
+
+                const temCodigo = !ehValorAusente(codigo);
+
+                const temNome = !ehValorAusente(nome);
+
+
+
+                if (temCodigo && temNome) {
+
+                    return `${String(codigo).trim()} - ${String(nome).trim()}`;
+
+                }
+
+
+
+                if (temNome) {
+
+                    return String(nome).trim();
+
+                }
+
+
+
+                if (temCodigo) {
+
+                    return String(codigo).trim();
+
+                }
+
+
+
+                return 'Não in
+
+
+====================================================================================================
+SCRIPT INLINE #11
+TERMO: vl_anulacao
+====================================================================================================
+        setText('#detPago', formatarMoeda(item.vl_pago));
+
+                setText('#detPagoRp', formatarMoeda(item.vl_pago_rp));
+
+
+
+                setText('#detLiquidacaoEmpenhadoAtual', formatarMoeda(empenhadoAtual));
+
+                setText('#detSaldoLiquidar', formatarMoeda(saldoLiquidar));
+
+                setText('#detPercentualLiquidado', formatarPercentual(empenhadoAtual > 0 ? (liquidado / empenhadoAtual) * 100 : 0));
+
+                setText('#detTotalPago', formatarMoeda(totalPago));
+
+                setText('#detSaldoPagar', formatarMoeda(saldoPagar));
+
+                setText('#detPercentualPago', formatarPercentual(liquidado > 0 ? (totalPago / liquidado) * 100 : 0));
+
+
+
+                setText('#detEmpenhadoInicial', formatarMoeda(item.vl_empenhado_inicial));
+
+                setText('#detEmpenhadoAtual', formatarMoeda(item.vl_empenhado));
+
+                setText('#detReforco', formatarMoeda(item.vl_reforco));
+
+                setText('#detAnulacao', formatarMoeda(item.vl_anulacao));
+
+
+
+                setText('#detOutrasInformacoes', item.indicador_restos || 'Nao informado');
+
+                setText('#detOutrasProcesso', item.num_processo || 'Nao informado');
+
+                setText('#detOutrasTipoLicitacao', formatarCodigoNome(item.cod_tipo_licitacao, item.nome_tipo_licitacao));
+
+            }
+
+
+
+            function limparNomeFavorecido(nome) {
+
+                if (nome === null || nome === undefined) {
+
+                    return '';
+
+                }
+
+
+
+                // remove aspas (simples/duplas) e espacos nas extremidades,
+
+                // preservando apostrofos internos legitimos (ex.: EPI'S, LET'S)
+
+                return String(nome).trim().replace(/^["'\s]+|["'\s]+$/g, '').trim();
+
+            }
+
+
+
+            function ehValorAusente(valor) {
+
+                if (valor === null || valor === undefined) {
+
+                    return true;
+
+                }
+
+
+
+                const texto = String(valor).trim().toLowerCase();
+
+                return texto === '' || texto === 'null' || texto === '-'
+
+                    || texto === 'nao informado' || texto === 'não informado';
+
+            }
+
+
+
+            function formatarCodigoNome(codigo, nome) {
+
+                const temCodigo = !ehValorAusente(codigo);
+
+                const temNome = !ehValorAusente(nome);
+
+
+
+                if (temCodigo && temNome) {
+
+                    return `${String(codigo).trim()} - ${String(nome).trim()}`;
+
+                }
+
+
+
+                if (temNome) {
+
+                    return String(nome).trim();
+
+                }
+
+
+
+                if (temCodigo) {
+
+                    return String(codigo).trim();
+
+                }
+
+
+
+                return 'Não informado';
+
+            }
+
+
+
+            function setText(selector, value) 
+
+
+====================================================================================================
+SCRIPT INLINE #11
+TERMO: num_empenho
+====================================================================================================
+          html += `
+
+                            <tr>
+
+                                <td>${codigoRender}</td>
+
+                                <td>${nomeRender}</td>
+
+                                <td class="${colDataClasse}">${dataEmpenhoRender}</td>
+
+                                <td class="text-right">${empenhado}</td>
+
+                                <td class="text-right">${liquidado}</td>
+
+                                <td class="text-right">${pago}</td>
+
+                                <td class="text-right">${pagoRp}</td>
+
+                            </tr>`;
+
+                });
+
+
+
+                $('#tbodyGrid').html(html);
+
+            }
+
+
+
+            function obterCodigoPorEtapa(item) {
+
+                if (etapaAtual === 'subfuncao') return item.cod_subfuncao;
+
+                if (etapaAtual === 'acao') return item.cod_acao;
+
+                if (etapaAtual === 'favorecido') return item.cnpj_cpf_favorecido;
+
+                if (etapaAtual === 'empenho') return item.num_empenho;
+
+                if (etapaAtual === 'programa') return item.cod_programa;
+
+                if (etapaAtual === 'funcao') return item.cod_funcao;
+
+                return item.cod_orgao;
+
+            }
+
+
+
+            function obterNomePorEtapa(item) {
+
+                if (etapaAtual === 'subfuncao') return item.nome_subfuncao;
+
+                if (etapaAtual === 'acao') return item.nome_acao;
+
+                if (etapaAtual === 'favorecido') return limparNomeFavorecido(item.nome_favorecido);
+
+                if (etapaAtual === 'empenho') {
+
+                    return limparNomeFavorecido(item.nome_favorecido) || 'Empenho';
+
+                }
+
+
+
+                if (etapaAtual === 'programa') return item.nome_programa;
+
+                if (etapaAtual === 'funcao') return item.nome_funcao;
+
+                return item.nome_orgao;
+
+            }
+
+
+
+            function abrirProximoNivel(codigoAtual, nomeAtual) {
+
+                const tipo = obterTipoRetornoSelecionado();
+
+
+
+                if (tipo === 'orgao') {
+
+                    if (etapaAtual === 'orgao') {
+
+                        $('#filtroCodOrgao').val(parseInt(codigoAtual, 10));
+
+                        $('#filtroCpfCnpjFavorecido').val('');
+
+                        roteiroSelecao.orgao = { codigo: codigoAtual, nome: nomeAtual };
+
+                        roteiroSelecao.favorecido = null;
+
+                    } else if (etapaAtual === 'favorecido') {
+
+                        $('#filtroCpfCnpjFavorecido').val(codigoAtual);
+
+                        roteiroSelecao.favorecido = { codigo: codigoAtual, nome: nomeAtual };
+
+                    } else {
+
+                        return;
+
+                    }
+
+                } else if (tipo === 'programa') {
+
+                    if (etapaAtual === 'programa') {
+
+
+
+====================================================================================================
+SCRIPT INLINE #11
+TERMO: num_empenho
+====================================================================================================
+  dadosGridAtual = [];
+
+                $('#tbodyGrid').html('<tr><td colspan="7" class="text-center text-muted py-4">Selecione os filtros e clique em Buscar</td></tr>');
+
+                $('#paginacao').html('');
+
+                $('#paginacao-bottom').html('');
+
+                $('#info-paginacao').html('');
+
+                $('#info-paginacao-bottom').html('');
+
+                $('#filtroTotal').val(0);
+
+                $('#btnExportarCsv').hide();
+
+                $('#btnExportarPdf').hide();
+
+            }
+
+
+
+            function abrirDetalhesEmpenho(item) {
+
+                preencherDetalhesEmpenho(item || {});
+
+                $('#modalDetalheEmpenho').modal('show');
+
+            }
+
+
+
+            function preencherDetalhesEmpenho(item) {
+
+                const dataEmpenho = item.data_registro_empenho
+
+                    ? new Date(item.data_registro_empenho).toLocaleDateString('pt-BR')
+
+                    : 'Nao informado';
+
+
+
+                setText('#detNumeroEmpenho', item.num_empenho || 'Nao informado');
+
+                setText('#detAnoExercicio', item.ano_exercicio || 'Nao informado');
+
+                setText('#detDataRegistroEmpenho', dataEmpenho);
+
+
+
+                setText('#detUnidadeOrcamentaria', formatarCodigoNome(item.cod_uo, item.nome_uo));
+
+                setText('#detUnidadeExecutora', formatarCodigoNome(item.cod_ug, item.nome_ug));
+
+                setText('#detFuncao', formatarCodigoNome(item.cod_funcao, item.nome_funcao));
+
+                setText('#detSubfuncao', formatarCodigoNome(item.cod_subfuncao, item.nome_subfuncao));
+
+                setText('#detPrograma', formatarCodigoNome(item.cod_programa, item.nome_programa));
+
+                setText('#detAcao', formatarCodigoNome(item.cod_acao, item.nome_acao));
+
+                setText('#detCategoriaDespesa', formatarCodigoNome(item.cod_categoria_despesa, item.nome_categoria_despesa));
+
+                setText('#detGrupoDespesa', formatarCodigoNome(item.cod_grupo, item.nome_grupo));
+
+                setText('#detElementoDespesa', formatarCodigoNome(item.cod_elemento, item.nome_elemento));
+
+                setText('#detItemDespesa', formatarCodigoNome(item.cod_item, item.nome_item));
+
+                setText('#detModalidadeAplicacao', formatarCodigoNome(item.cod_modalidade_aplicacao, item.nome_modalidade_aplicacao));
+
+                setText('#detFonteRecurso', formatarCodigoNome(item.cod_fonte, item.nome_fonte));
+
+                setText('#detFonteRecursoStn', item.cod_fonte_detalhada || 'Nao informado');
+
+
+
+                setText('#detEmpenhoFavorecido', limparNomeFavorecido(item.nome_favorecido));
+
+                setText('#detEmpenhoCpfCnpj', item.cnpj_cpf_favorecido || 'Nao informado');
+
+                setText('#detEmpenhoProcesso', item.num_processo || 'Nao infor
+
+
+====================================================================================================
+SCRIPT INLINE #11
+TERMO: reforco
+====================================================================================================
+totalPago, 0);
+
+
+
+                setText('#detLiquidado', formatarMoeda(item.vl_liquidado));
+
+                setText('#detPago', formatarMoeda(item.vl_pago));
+
+                setText('#detPagoRp', formatarMoeda(item.vl_pago_rp));
+
+
+
+                setText('#detLiquidacaoEmpenhadoAtual', formatarMoeda(empenhadoAtual));
+
+                setText('#detSaldoLiquidar', formatarMoeda(saldoLiquidar));
+
+                setText('#detPercentualLiquidado', formatarPercentual(empenhadoAtual > 0 ? (liquidado / empenhadoAtual) * 100 : 0));
+
+                setText('#detTotalPago', formatarMoeda(totalPago));
+
+                setText('#detSaldoPagar', formatarMoeda(saldoPagar));
+
+                setText('#detPercentualPago', formatarPercentual(liquidado > 0 ? (totalPago / liquidado) * 100 : 0));
+
+
+
+                setText('#detEmpenhadoInicial', formatarMoeda(item.vl_empenhado_inicial));
+
+                setText('#detEmpenhadoAtual', formatarMoeda(item.vl_empenhado));
+
+                setText('#detReforco', formatarMoeda(item.vl_reforco));
+
+                setText('#detAnulacao', formatarMoeda(item.vl_anulacao));
+
+
+
+                setText('#detOutrasInformacoes', item.indicador_restos || 'Nao informado');
+
+                setText('#detOutrasProcesso', item.num_processo || 'Nao informado');
+
+                setText('#detOutrasTipoLicitacao', formatarCodigoNome(item.cod_tipo_licitacao, item.nome_tipo_licitacao));
+
+            }
+
+
+
+            function limparNomeFavorecido(nome) {
+
+                if (nome === null || nome === undefined) {
+
+                    return '';
+
+                }
+
+
+
+                // remove aspas (simples/duplas) e espacos nas extremidades,
+
+                // preservando apostrofos internos legitimos (ex.: EPI'S, LET'S)
+
+                return String(nome).trim().replace(/^["'\s]+|["'\s]+$/g, '').trim();
+
+            }
+
+
+
+            function ehValorAusente(valor) {
+
+                if (valor === null || valor === undefined) {
+
+                    return true;
+
+                }
+
+
+
+                const texto = String(valor).trim().toLowerCase();
+
+                return texto === '' || texto === 'null' || texto === '-'
+
+                    || texto === 'nao informado' || texto === 'não informado';
+
+            }
+
+
+
+            function formatarCodigoNome(codigo, nome) {
+
+                const temCodigo = !ehValorAusente(codigo);
+
+                const temNome = !ehValorAusente(nome);
+
+
+
+                if (temCodigo && temNome) {
+
+                    return `${String(codigo).trim()} - ${String(nome).trim()}`;
+
+                }
+
+
+
+                if (temNome) {
+
+                    return String(nome).trim();
+
+                }
+
+
+
+                if (temCodigo) {
+
+                    return String(codigo).trim();
+
+                }
+
+
+
+ 
+
+
+====================================================================================================
+SCRIPT INLINE #11
+TERMO: reforco
+====================================================================================================
+  setText('#detLiquidado', formatarMoeda(item.vl_liquidado));
+
+                setText('#detPago', formatarMoeda(item.vl_pago));
+
+                setText('#detPagoRp', formatarMoeda(item.vl_pago_rp));
+
+
+
+                setText('#detLiquidacaoEmpenhadoAtual', formatarMoeda(empenhadoAtual));
+
+                setText('#detSaldoLiquidar', formatarMoeda(saldoLiquidar));
+
+                setText('#detPercentualLiquidado', formatarPercentual(empenhadoAtual > 0 ? (liquidado / empenhadoAtual) * 100 : 0));
+
+                setText('#detTotalPago', formatarMoeda(totalPago));
+
+                setText('#detSaldoPagar', formatarMoeda(saldoPagar));
+
+                setText('#detPercentualPago', formatarPercentual(liquidado > 0 ? (totalPago / liquidado) * 100 : 0));
+
+
+
+                setText('#detEmpenhadoInicial', formatarMoeda(item.vl_empenhado_inicial));
+
+                setText('#detEmpenhadoAtual', formatarMoeda(item.vl_empenhado));
+
+                setText('#detReforco', formatarMoeda(item.vl_reforco));
+
+                setText('#detAnulacao', formatarMoeda(item.vl_anulacao));
+
+
+
+                setText('#detOutrasInformacoes', item.indicador_restos || 'Nao informado');
+
+                setText('#detOutrasProcesso', item.num_processo || 'Nao informado');
+
+                setText('#detOutrasTipoLicitacao', formatarCodigoNome(item.cod_tipo_licitacao, item.nome_tipo_licitacao));
+
+            }
+
+
+
+            function limparNomeFavorecido(nome) {
+
+                if (nome === null || nome === undefined) {
+
+                    return '';
+
+                }
+
+
+
+                // remove aspas (simples/duplas) e espacos nas extremidades,
+
+                // preservando apostrofos internos legitimos (ex.: EPI'S, LET'S)
+
+                return String(nome).trim().replace(/^["'\s]+|["'\s]+$/g, '').trim();
+
+            }
+
+
+
+            function ehValorAusente(valor) {
+
+                if (valor === null || valor === undefined) {
+
+                    return true;
+
+                }
+
+
+
+                const texto = String(valor).trim().toLowerCase();
+
+                return texto === '' || texto === 'null' || texto === '-'
+
+                    || texto === 'nao informado' || texto === 'não informado';
+
+            }
+
+
+
+            function formatarCodigoNome(codigo, nome) {
+
+                const temCodigo = !ehValorAusente(codigo);
+
+                const temNome = !ehValorAusente(nome);
+
+
+
+                if (temCodigo && temNome) {
+
+                    return `${String(codigo).trim()} - ${String(nome).trim()}`;
+
+                }
+
+
+
+                if (temNome) {
+
+                    return String(nome).trim();
+
+                }
+
+
+
+                if (temCodigo) {
+
+                    return String(codigo).trim();
+
+                }
+
+
+
+                return 'Não infor
+
+
+====================================================================================================
+SCRIPT INLINE #11
+TERMO: anulacao
+====================================================================================================
+item.vl_liquidado));
+
+                setText('#detPago', formatarMoeda(item.vl_pago));
+
+                setText('#detPagoRp', formatarMoeda(item.vl_pago_rp));
+
+
+
+                setText('#detLiquidacaoEmpenhadoAtual', formatarMoeda(empenhadoAtual));
+
+                setText('#detSaldoLiquidar', formatarMoeda(saldoLiquidar));
+
+                setText('#detPercentualLiquidado', formatarPercentual(empenhadoAtual > 0 ? (liquidado / empenhadoAtual) * 100 : 0));
+
+                setText('#detTotalPago', formatarMoeda(totalPago));
+
+                setText('#detSaldoPagar', formatarMoeda(saldoPagar));
+
+                setText('#detPercentualPago', formatarPercentual(liquidado > 0 ? (totalPago / liquidado) * 100 : 0));
+
+
+
+                setText('#detEmpenhadoInicial', formatarMoeda(item.vl_empenhado_inicial));
+
+                setText('#detEmpenhadoAtual', formatarMoeda(item.vl_empenhado));
+
+                setText('#detReforco', formatarMoeda(item.vl_reforco));
+
+                setText('#detAnulacao', formatarMoeda(item.vl_anulacao));
+
+
+
+                setText('#detOutrasInformacoes', item.indicador_restos || 'Nao informado');
+
+                setText('#detOutrasProcesso', item.num_processo || 'Nao informado');
+
+                setText('#detOutrasTipoLicitacao', formatarCodigoNome(item.cod_tipo_licitacao, item.nome_tipo_licitacao));
+
+            }
+
+
+
+            function limparNomeFavorecido(nome) {
+
+                if (nome === null || nome === undefined) {
+
+                    return '';
+
+                }
+
+
+
+                // remove aspas (simples/duplas) e espacos nas extremidades,
+
+                // preservando apostrofos internos legitimos (ex.: EPI'S, LET'S)
+
+                return String(nome).trim().replace(/^["'\s]+|["'\s]+$/g, '').trim();
+
+            }
+
+
+
+            function ehValorAusente(valor) {
+
+                if (valor === null || valor === undefined) {
+
+                    return true;
+
+                }
+
+
+
+                const texto = String(valor).trim().toLowerCase();
+
+                return texto === '' || texto === 'null' || texto === '-'
+
+                    || texto === 'nao informado' || texto === 'não informado';
+
+            }
+
+
+
+            function formatarCodigoNome(codigo, nome) {
+
+                const temCodigo = !ehValorAusente(codigo);
+
+                const temNome = !ehValorAusente(nome);
+
+
+
+                if (temCodigo && temNome) {
+
+                    return `${String(codigo).trim()} - ${String(nome).trim()}`;
+
+                }
+
+
+
+                if (temNome) {
+
+                    return String(nome).trim();
+
+                }
+
+
+
+                if (temCodigo) {
+
+                    return String(codigo).trim();
+
+                }
+
+
+
+                return 'Não informado';
+
+            }
+
+
+
+            func
+
+
+====================================================================================================
+SCRIPT INLINE #11
+TERMO: anulacao
+====================================================================================================
+     setText('#detPago', formatarMoeda(item.vl_pago));
+
+                setText('#detPagoRp', formatarMoeda(item.vl_pago_rp));
+
+
+
+                setText('#detLiquidacaoEmpenhadoAtual', formatarMoeda(empenhadoAtual));
+
+                setText('#detSaldoLiquidar', formatarMoeda(saldoLiquidar));
+
+                setText('#detPercentualLiquidado', formatarPercentual(empenhadoAtual > 0 ? (liquidado / empenhadoAtual) * 100 : 0));
+
+                setText('#detTotalPago', formatarMoeda(totalPago));
+
+                setText('#detSaldoPagar', formatarMoeda(saldoPagar));
+
+                setText('#detPercentualPago', formatarPercentual(liquidado > 0 ? (totalPago / liquidado) * 100 : 0));
+
+
+
+                setText('#detEmpenhadoInicial', formatarMoeda(item.vl_empenhado_inicial));
+
+                setText('#detEmpenhadoAtual', formatarMoeda(item.vl_empenhado));
+
+                setText('#detReforco', formatarMoeda(item.vl_reforco));
+
+                setText('#detAnulacao', formatarMoeda(item.vl_anulacao));
+
+
+
+                setText('#detOutrasInformacoes', item.indicador_restos || 'Nao informado');
+
+                setText('#detOutrasProcesso', item.num_processo || 'Nao informado');
+
+                setText('#detOutrasTipoLicitacao', formatarCodigoNome(item.cod_tipo_licitacao, item.nome_tipo_licitacao));
+
+            }
+
+
+
+            function limparNomeFavorecido(nome) {
+
+                if (nome === null || nome === undefined) {
+
+                    return '';
+
+                }
+
+
+
+                // remove aspas (simples/duplas) e espacos nas extremidades,
+
+                // preservando apostrofos internos legitimos (ex.: EPI'S, LET'S)
+
+                return String(nome).trim().replace(/^["'\s]+|["'\s]+$/g, '').trim();
+
+            }
+
+
+
+            function ehValorAusente(valor) {
+
+                if (valor === null || valor === undefined) {
+
+                    return true;
+
+                }
+
+
+
+                const texto = String(valor).trim().toLowerCase();
+
+                return texto === '' || texto === 'null' || texto === '-'
+
+                    || texto === 'nao informado' || texto === 'não informado';
+
+            }
+
+
+
+            function formatarCodigoNome(codigo, nome) {
+
+                const temCodigo = !ehValorAusente(codigo);
+
+                const temNome = !ehValorAusente(nome);
+
+
+
+                if (temCodigo && temNome) {
+
+                    return `${String(codigo).trim()} - ${String(nome).trim()}`;
+
+                }
+
+
+
+                if (temNome) {
+
+                    return String(nome).trim();
+
+                }
+
+
+
+                if (temCodigo) {
+
+                    return String(codigo).trim();
+
+                }
+
+
+
+                return 'Não informado';
+
+            }
+
+
+
+            function setText(selector, value) {
+
+

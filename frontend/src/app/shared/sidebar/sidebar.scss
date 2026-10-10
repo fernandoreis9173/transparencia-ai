@@ -1,0 +1,147 @@
+
+:host {
+  display: block;
+  width: 250px;
+  flex-shrink: 0;
+}
+
+.sidebar {
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  width: 250px;
+  height: 100vh;
+  padding: 24px 16px;
+  background: #fff;
+  border-right: 1px solid #e8edf3;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 8px 30px;
+  color: #172b4d;
+  text-decoration: none;
+
+  strong, small {
+    display: block;
+  }
+
+  strong {
+    font-size: 15px;
+  }
+
+  small {
+    margin-top: 4px;
+    color: #7b8798;
+    font-size: 11px;
+  }
+}
+
+.brand-icon {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: #eaf1ff;
+  color: #145ce6;
+  font-size: 22px;
+}
+
+.menu-label {
+  margin: 8px 10px 12px;
+  color: #8a94a6;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.nav-menu {
+  display: grid;
+  gap: 6px;
+
+  a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 9px;
+    color: #64748b;
+    font-size: 13px;
+    text-decoration: none;
+    transition: background 0.2s, color 0.2s;
+
+    i {
+      font-size: 17px;
+    }
+
+    &:hover, &.active {
+      color: #145ce6;
+      background: #edf3ff;
+    }
+
+    &.active {
+      font-weight: 600;
+    }
+  }
+}
+
+.sidebar-footer {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: auto;
+  padding: 14px 8px;
+  color: #198754;
+  border-top: 1px solid #edf0f4;
+
+  strong, small {
+    display: block;
+  }
+
+  strong {
+    color: #344054;
+    font-size: 11px;
+  }
+
+  small {
+    margin-top: 4px;
+    color: #8a94a6;
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 768px) {
+  :host {
+    width: 68px;
+  }
+
+  .sidebar {
+    width: 68px;
+    padding: 20px 8px;
+    align-items: center;
+  }
+
+  .brand {
+    padding: 0 0 30px;
+  }
+
+  .brand > span:last-child,
+  .menu-label,
+  .nav-menu a span,
+  .sidebar-footer > div {
+    display: none;
+  }
+
+  .nav-menu a {
+    justify-content: center;
+    padding: 12px 8px;
+  }
+
+  .sidebar-footer {
+    justify-content: center;
+  }
+}

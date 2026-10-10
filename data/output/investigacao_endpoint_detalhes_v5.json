@@ -1,0 +1,199 @@
+{
+  "estatisticas": {
+    "inicio": "2026-10-08T08:23:30.562920",
+    "requisicoes": 0,
+    "erros": 0,
+    "termos_encontrados": {
+      "/Despesas/": 5,
+      "Despesas/": 5,
+      "vl_reforco": 1,
+      "vl_anulacao": 1,
+      "vl_empenhado_inicial": 1,
+      "num_empenho": 2,
+      "empenho": 43,
+      "detalhe": 9,
+      "detalhes": 4,
+      "reforco": 2,
+      "anulacao": 2,
+      "ajax": 2,
+      "$.ajax": 2,
+      "$.get": 1,
+      "fetch(": 1,
+      "url:": 2
+    },
+    "scripts_inline": 11,
+    "endpoints_novos": 0,
+    "endpoints_conhecidos": 10,
+    "endpoints_testados": 0,
+    "tempo_segundos": 0.02,
+    "fim": "2026-10-08T08:23:30.585580"
+  },
+  "endpoints_encontrados": [
+    {
+      "url": "https://www.transparencia.sp.gov.br/Despesas/Buscar",
+      "tipo": "CONHECIDO",
+      "motivos": [
+        "despesas"
+      ]
+    },
+    {
+      "url": "https://www.transparencia.sp.gov.br/Despesas/Combos",
+      "tipo": "CONHECIDO",
+      "motivos": [
+        "despesas"
+      ]
+    },
+    {
+      "url": "https://www.transparencia.sp.gov.br/Despesas/ExportarCsv",
+      "tipo": "CONHECIDO",
+      "motivos": [
+        "despesas"
+      ]
+    },
+    {
+      "url": "https://www.transparencia.sp.gov.br/Despesas/ExportarPdf",
+      "tipo": "CONHECIDO",
+      "motivos": [
+        "despesas"
+      ]
+    },
+    {
+      "url": "https://www.transparencia.sp.gov.br/Despesas/Filtro",
+      "tipo": "CONHECIDO",
+      "motivos": [
+        "despesas"
+      ]
+    }
+  ],
+  "resultados": [],
+  "analises_scripts": [
+    {
+      "indice": 11,
+      "tamanho": 53907,
+      "termos": {
+        "/Despesas/": [
+          8208,
+          9001,
+          14668,
+          52993,
+          53216
+        ],
+        "Despesas/": [
+          8209,
+          9002,
+          14669,
+          52994,
+          53217
+        ],
+        "vl_reforco": [
+          37866
+        ],
+        "vl_anulacao": [
+          37940
+        ],
+        "vl_empenhado_inicial": [
+          37701
+        ],
+        "num_empenho": [
+          19871,
+          34469
+        ],
+        "empenho": [
+          1124,
+          1436,
+          2174,
+          15767,
+          17975,
+          18296,
+          18388,
+          18556,
+          18588,
+          18616,
+          18687,
+          18815,
+          19107,
+          19849,
+          19875,
+          20415,
+          20502,
+          26095,
+          26159,
+          26648,
+          29555,
+          29722,
+          29887,
+          29999,
+          30335,
+          31096,
+          31969,
+          32823,
+          34023,
+          34073,
+          34127,
+          34208,
+          34251,
+          34280,
+          34339,
+          34454,
+          34473,
+          34629,
+          34643,
+          36032,
+          36127,
+          36220,
+          36307
+        ],
+        "detalhe": [
+          1132,
+          1428,
+          18396,
+          24992,
+          28331,
+          34015,
+          34065,
+          34120,
+          34200
+        ],
+        "detalhes": [
+          1428,
+          34015,
+          34065,
+          34200
+        ],
+        "reforco": [
+          37837,
+          37869
+        ],
+        "anulacao": [
+          37910,
+          37943
+        ],
+        "ajax": [
+          8967,
+          14634
+        ],
+        "$.ajax": [
+          8965,
+          14632
+        ],
+        "$.get": [
+          8201
+        ],
+        "fetch(": [
+          51194
+        ],
+        "url:": [
+          8995,
+          14662
+        ]
+      },
+      "endpoints": [
+        "https://www.transparencia.sp.gov.br/Despesas/Buscar",
+        "https://www.transparencia.sp.gov.br/Despesas/Combos",
+        "https://www.transparencia.sp.gov.br/Despesas/ExportarCsv",
+        "https://www.transparencia.sp.gov.br/Despesas/ExportarPdf",
+        "https://www.transparencia.sp.gov.br/Despesas/Filtro"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+﻿coluna,tipo,total_registros,quantidade_nulos,percentual_nulos,valores_unicos,exemplo_1,exemplo_2,exemplo_3,minimo,maximo,media
+cnpj_cpf_favorecido,string,110,0,0.0,50,00159534000165,00346953000106,02456361000172,,,
+nome_favorecido,string,110,0,0.0,50,2J UNIFORMES PROFISSIONAIS LTDA - EPP,2N ENGENHARIA LTDA.,03 GESTÃO AMBIENTAL - EIRELLI,,,
+ano_exercicio,int64,110,0,0.0,1,2025,,,2025,2025,2025.0
+cod_orgao,int64,110,0,0.0,1,48000,,,48000,48000,48000.0
+cod_uo,int64,110,0,0.0,5,48057,48059,48058,48057,48061,48057.84545454545
+cod_funcao,int64,110,0,0.0,1,12,,,12,12,12.0
+cod_subfuncao,int64,110,0,0.0,3,122,364,392,122,392,271.43636363636364
+cod_programa,int64,110,0,0.0,1,4807,,,4807,4807,4807.0
+cod_acao,int64,110,0,0.0,5,63510000,11510000,53040000,11510000,63510000,56757818.18181818
+cod_elemento,float64,110,110,100.0,0,,,,,,
+cod_ug,float64,110,110,100.0,0,,,,,,
+cod_categoria_despesa,float64,110,110,100.0,0,,,,,,
+cod_grupo,float64,110,110,100.0,0,,,,,,
+cod_modalidade_aplicacao,float64,110,110,100.0,0,,,,,,
+cod_item,float64,110,110,100.0,0,,,,,,
+cod_fonte,float64,110,110,100.0,0,,,,,,
+cod_fonte_detalhada,int64,110,0,0.0,3,150010001,250140001,150140001,150010001,250140001,151837637.36363637
+cod_tipo_licitacao,int64,110,0,0.0,5,5,4,7,4,9,6.345454545454546
+vl_empenhado,float64,110,0,0.0,99,12790.6,1333602.16,700.0,1.12,1333602.16,27479.580636363633
+vl_liquidado,float64,110,0,0.0,98,12790.6,1333602.16,700.0,0.0,1333602.16,27660.822818181816
+vl_pago,float64,110,0,0.0,5,0.0,3000.0,700.0,0.0,3000.0,35.95454545454545
+vl_pago_rp,int64,110,0,0.0,1,0,,,0,0,0.0
+vl_dotacao_atual,float64,110,110,100.0,0,,,,,,
+vl_empenhado_inicial,float64,110,0,0.0,99,12790.6,1333602.16,700.0,1.12,1333602.16,27479.580636363633
+vl_reforco,int64,110,0,0.0,1,0,,,0,0,0.0
+vl_anulacao,int64,110,0,0.0,1,0,,,0,0,0.0
+nome_orgao,string,110,0,0.0,1,"SECRETARIA DE CIENCIA, TECNOL. E INOVACAO",,,,,
+nome_uo,string,110,0,0.0,5,UNIVERSIDADE DE SAO PAULO,UNIVERSIDADE EST. PAUL. JULIO MESQUITA FILHO,UNIVERSIDADE ESTADUAL DE CAMPINAS,,,
+nome_ug,float64,110,110,100.0,0,,,,,,
+nome_funcao,string,110,0,0.0,1,EDUCACAO,,,,,
+nome_subfuncao,string,110,0,0.0,3,ADMINISTRACAO GERAL,ENSINO SUPERIOR,DIFUSAO CULTURAL,,,
+nome_programa,string,110,0,0.0,1,ENSINO SUPERIOR NO ESTADO DE SAO PAULO,,,,,
+nome_acao,string,110,0,0.0,5,APOIO TECNICO ADM. DO ENSINO SUPERIOR,ADEQ. ESTRUTURA FISICA UNIVERS. E FACULDADES,ENSINO GRAD. NAS UNIVERS. E FACUL. ESTADUAIS,,,
+nome_elemento,float64,110,110,100.0,0,,,,,,
+nome_categoria_despesa,float64,110,110,100.0,0,,,,,,
+nome_grupo,float64,110,110,100.0,0,,,,,,
+nome_modalidade_aplicacao,float64,110,110,100.0,0,,,,,,
+nome_item,float64,110,110,100.0,0,,,,,,
+nome_fonte,float64,110,110,100.0,0,,,,,,
+num_processo,string,110,0,0.0,15,20250038095,114,115,,,
+nome_tipo_licitacao,int64,110,0,0.0,5,5,4,7,4,9,6.345454545454546
+indicador_restos,str,110,0,0.0,1,E,,,,,
+data_registro_empenho,str,110,0,0.0,74,2025-02-11T00:00:00,2025-12-23T00:00:00,2025-12-02T00:00:00,,,
+num_empenho,string,110,0,0.0,110,2025NE04974,2025NE47537,2025NE39587,,,
