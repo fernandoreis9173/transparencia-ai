@@ -1,5 +1,5 @@
 
-@if (carregando) {
+@if (carregando()) {
   <div class="summary-grid">
     @for (item of [1, 2, 3, 4]; track item) {
       <div class="summary-card skeleton-card">
@@ -9,14 +9,14 @@
       </div>
     }
   </div>
-} @else if (erro) {
+} @else if (erro()) {
   <div class="alert alert-danger d-flex justify-content-between align-items-center">
     <span>Não foi possível carregar os indicadores financeiros.</span>
     <button class="btn btn-outline-danger btn-sm" (click)="tentarNovamente()">
       Tentar novamente
     </button>
   </div>
-} @else if (resumo) {
+} @else if (resumo(); as resumo) {
   <div class="summary-grid">
     <article class="summary-card">
       <div class="card-top">

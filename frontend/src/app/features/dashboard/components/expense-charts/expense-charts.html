@@ -1,1 +1,127 @@
-<p>expense-charts works!</p>
+
+<section class="charts-section">
+  <div class="section-heading">
+    <div>
+      <h2>Análise das despesas</h2>
+      <p>Distribuição e acompanhamento dos dados disponíveis</p>
+    </div>
+
+    <button
+      class="btn btn-outline-primary btn-sm"
+      type="button"
+      (click)="tentarNovamente()"
+      [disabled]="carregando()">
+      <i class="bi bi-arrow-clockwise me-1"></i>
+      Atualizar
+    </button>
+  </div>
+
+  @if (carregando()) {
+    <div class="chart-state">
+      <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+      <span>Carregando gráficos...</span>
+    </div>
+  } @else if (erro()) {
+    <div class="alert alert-danger">
+      Não foi possível carregar os gráficos.
+      Verifique se a API está disponível e tente novamente.
+      <button
+        class="btn btn-sm btn-outline-danger ms-2"
+        type="button"
+        (click)="tentarNovamente()">
+        Tentar novamente
+      </button>
+    </div>
+  } @else {
+    <div class="charts-grid">
+      <article class="chart-card chart-card-wide">
+        <div class="chart-heading">
+          <div>
+            <h3>Despesas por unidade</h3>
+            <p>Até 8 unidades, ordenadas pelo valor</p>
+          </div>
+          <span class="chart-icon blue">
+            <i class="bi bi-bar-chart-fill"></i>
+          </span>
+        </div>
+
+        @if (barData().labels?.length) {
+          <div class="chart-container">
+            <canvas
+              baseChart
+              [type]="'bar'"
+              [data]="barData()"
+              [options]="barOptions">
+            </canvas>
+          </div>
+        } @else {
+          <div class="empty-chart">
+            Não há dados de unidades disponíveis para exibição.
+          </div>
+        }
+      </article>
+
+      <article class="chart-card">
+        <div class="chart-heading">
+          <div>
+            <h3>Situação dos pagamentos</h3>
+            <p>Distribuição dos registros retornados pela API</p>
+          </div>
+          <span class="chart-icon green">
+            <i class="bi bi-pie-chart-fill"></i>
+          </span>
+        </div>
+
+        @if (doughnutData().labels?.length) {
+          <div class="chart-container doughnut-container">
+            <canvas
+              baseChart
+              [type]="'doughnut'"
+              [data]="doughnutData()"
+              [options]="doughnutOptions">
+            </canvas>
+          </div>
+        } @else {
+          <div class="empty-chart">
+            Não há dados de pagamentos disponíveis para exibição.
+          </div>
+        }
+      </article>
+
+      <article class="chart-card chart-card-wide">
+        <div class="chart-heading">
+          <div>
+            <h3>Evolução mensal das despesas</h3>
+            <p>Valores agrupados por período, conforme a API</p>
+          </div>
+          <span class="chart-icon purple">
+            <i class="bi bi-graph-up-arrow"></i>
+          </span>
+        </div>
+
+        @if (!semDadosMensais() && lineData().labels?.length) {
+          <div class="chart-container line-container">
+            <canvas
+              baseChart
+              [type]="'line'"
+              [data]="lineData()"
+              [options]="lineOptions">
+            </canvas>
+          </div>
+        } @else {
+          <div class="empty-chart">
+            Não há dados mensais suficientes para exibir uma evolução.
+            Isso pode ocorrer quando a amostra contém apenas um período
+            ou quando o endpoint não retorna agrupamentos mensais.
+          </div>
+        }
+      </article>
+    </div>
+  }
+
+  <p class="data-disclaimer">
+    <i class="bi bi-info-circle me-1"></i>
+    Os gráficos refletem a amostra de desenvolvimento disponível.
+    Eles não representam o total de despesas do Estado de São Paulo.
+  </p>
+</section>
