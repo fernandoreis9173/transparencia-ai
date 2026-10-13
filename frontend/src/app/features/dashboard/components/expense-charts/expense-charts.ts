@@ -1,11 +1,7 @@
-
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { BaseChartDirective } from 'ng2-charts';
-import {
-  ChartData,
-  ChartOptions,
-} from 'chart.js';
+import { ChartData, ChartOptions } from 'chart.js';
 import { forkJoin } from 'rxjs';
 import { AnalyticsService } from '../../../../core/services/analytics.service';
 
@@ -53,8 +49,28 @@ export class ExpenseCharts implements OnInit {
   readonly lineOptions: ChartOptions<'line'> = {
     responsive: true,
     maintainAspectRatio: false,
-    plugins: { legend: { display: false } },
-    scales: { y: { beginAtZero: true } },
+    interaction: {
+      intersect: false,
+      mode: 'index',
+    },
+    plugins: {
+      legend: {
+        display: true,
+        position: 'bottom',
+      },
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        ticks: {
+          callback: (value) =>
+            new Intl.NumberFormat('pt-BR', {
+              notation: 'compact',
+              maximumFractionDigits: 1,
+            }).format(Number(value)),
+        },
+      },
+    },
   };
 
   readonly doughnutOptions: ChartOptions<'doughnut'> = {
@@ -102,10 +118,7 @@ export class ExpenseCharts implements OnInit {
 
   private extrairLinhas(valor: unknown): Row[] {
     if (Array.isArray(valor)) {
-      return valor.filter(
-        (item): item is Row =>
-          item !== null && typeof item === 'object',
-      );
+      return valor.filter((item): item is Row => item !== null && typeof item === 'object');
     }
 
     if (valor && typeof valor === 'object') {
@@ -121,26 +134,22 @@ export class ExpenseCharts implements OnInit {
     return [];
   }
 
-  private encontrarCampo(
-    linha: Row,
-    candidatos: string[],
-    tipo: 'texto' | 'numero',
-  ): unknown {
+  private encontrarCampo(linha: Row, candidatos: string[], tipo: 'texto' | 'numero'): unknown {
     const entradas = Object.entries(linha);
 
     for (const candidato of candidatos) {
       const entrada = entradas.find(
         ([chave, valor]) =>
-          chave.toLowerCase() === candidato.toLowerCase() &&
-          this.tipoValido(valor, tipo),
+          chave.toLowerCase() === candidato.toLowerCase() && this.tipoValido(valor, tipo),
       );
 
       if (entrada) return entrada[1];
     }
 
-    const palavras = tipo === 'numero'
-      ? ['total_empenhado', 'vl_empenhado', 'valor', 'quantidade', 'total', 'pago', 'liquidado']
-      : ['unidade', 'nome', 'mes', 'mês', 'periodo', 'período', 'situacao', 'situação', 'status'];
+    const palavras =
+      tipo === 'numero'
+        ? ['total_empenhado', 'vl_empenhado', 'valor', 'quantidade', 'total', 'pago', 'liquidado']
+        : ['unidade', 'nome', 'mes', 'mês', 'periodo', 'período', 'situacao', 'situação', 'status'];
 
     const entrada = entradas.find(
       ([chave, valor]) =>
@@ -159,8 +168,7 @@ export class ExpenseCharts implements OnInit {
 
   private tipoValido(valor: unknown, tipo: 'texto' | 'numero'): boolean {
     if (tipo === 'numero') {
-      return valor !== null && valor !== '' &&
-        Number.isFinite(Number(valor));
+      return valor !== null && valor !== '' && Number.isFinite(Number(valor));
     }
 
     return typeof valor === 'string' && valor.trim().length > 0;
@@ -174,94 +182,105 @@ export class ExpenseCharts implements OnInit {
   private montarBarras(linhas: Row[]): void {
     const dados = linhas
       .map((linha) => ({
-        nome: String(
-          this.encontrarCampo(
-            linha,
-            ['nome_unidade', 'unidade_orcamentaria', 'unidade', 'nome', 'descricao'],
-            'texto',
-          ) ?? 'Unidade sem nome',
-        ),
-        valor: this.numero(
-          this.encontrarCampo(
-            linha,
-            ['total_empenhado', 'vl_empenhado', 'valor_empenhado', 'valor', 'total'],
-            'numero',
-          ),
-        ),
+        nome: String(linha['nome_uo'] ?? 'Unidade sem nome'),
+        valor: this.numero(linha['total_empenhado']),
       }))
-      .filter((item) => item.valor >= 0)
       .sort((a, b) => b.valor - a.valor)
       .slice(0, 8);
 
     this.barData.set({
       labels: dados.map((item) => item.nome),
-      datasets: [{
-        data: dados.map((item) => item.valor),
-        label: 'Valor empenhado (R$)',
-        backgroundColor: '#2563eb',
-        borderRadius: 5,
-      }],
+      datasets: [
+        {
+          data: dados.map((item) => item.valor),
+          label: 'Total empenhado (R$)',
+          backgroundColor: '#2563eb',
+          borderRadius: 5,
+        },
+      ],
     });
   }
 
   private montarLinha(linhas: Row[]): void {
-    const dados = linhas.map((linha) => ({
-      nome: String(
-        this.encontrarCampo(
-          linha,
-          ['mes', 'mês', 'mes_referencia', 'periodo', 'referencia', 'ano_mes'],
-          'texto',
-        ) ?? '',
-      ),
-      valor: this.numero(
-        this.encontrarCampo(
-          linha,
-          ['total_empenhado', 'vl_empenhado', 'valor_empenhado', 'valor', 'total'],
-          'numero',
-        ),
-      ),
-    })).filter((item) => item.nome !== '');
+    const dados = linhas
+      .map((linha) => {
+        const mes = String(linha['mes'] ?? '');
+        const [ano, numeroMes] = mes.split('-').map(Number);
+
+        const nomeMes =
+          ano && numeroMes
+            ? new Date(ano, numeroMes - 1, 1).toLocaleDateString('pt-BR', {
+                month: 'short',
+                year: '2-digit',
+              })
+            : mes;
+
+        return {
+          mes: nomeMes,
+          data: mes,
+          empenhado: this.numero(linha['total_empenhado']),
+          liquidado: this.numero(linha['total_liquidado']),
+          pago: this.numero(linha['total_pago']),
+        };
+      })
+      .filter((item) => /^\d{4}-\d{2}-\d{2}$/.test(item.data))
+      .sort((a, b) => a.data.localeCompare(b.data));
 
     this.lineData.set({
-      labels: dados.map((item) => item.nome),
-      datasets: [{
-        data: dados.map((item) => item.valor),
-        label: 'Despesas (R$)',
-        borderColor: '#2563eb',
-        backgroundColor: 'rgba(37, 99, 235, 0.12)',
-        pointBackgroundColor: '#2563eb',
-        fill: true,
-        tension: 0.3,
-      }],
+      labels: dados.map((item) => item.mes),
+      datasets: [
+        {
+          data: dados.map((item) => item.empenhado),
+          label: 'Empenhado',
+          borderColor: '#2563eb',
+          backgroundColor: '#2563eb',
+          tension: 0.3,
+        },
+        {
+          data: dados.map((item) => item.liquidado),
+          label: 'Liquidado',
+          borderColor: '#f59e0b',
+          backgroundColor: '#f59e0b',
+          tension: 0.3,
+        },
+        {
+          data: dados.map((item) => item.pago),
+          label: 'Pago',
+          borderColor: '#16a34a',
+          backgroundColor: '#16a34a',
+          tension: 0.3,
+        },
+      ],
     });
   }
 
   private montarRosca(linhas: Row[]): void {
-    const dados = linhas.map((linha) => ({
-      nome: String(
-        this.encontrarCampo(
-          linha,
-          ['situacao', 'situação', 'status', 'descricao', 'nome'],
-          'texto',
-        ) ?? 'Não informado',
-      ),
-      valor: this.numero(
-        this.encontrarCampo(
-          linha,
-          ['quantidade', 'total', 'quantidade_empenhos', 'valor', 'total_pago'],
-          'numero',
-        ),
-      ),
-    }));
+    const nomes: Record<string, string> = {
+      NAO_PAGO: 'Não pago',
+      PAGO: 'Pago',
+      PAGAMENTO_PARCIAL: 'Pagamento parcial',
+    };
+
+    const dados = linhas.map((linha) => {
+      const situacao = String(linha['situacao_pagamento'] ?? 'NAO_INFORMADO');
+
+      return {
+        nome: nomes[situacao] ?? situacao,
+        quantidade: this.numero(linha['quantidade_empenhos']),
+      };
+    });
 
     this.doughnutData.set({
       labels: dados.map((item) => item.nome),
-      datasets: [{
-        data: dados.map((item) => item.valor),
-        backgroundColor: ['#2563eb', '#16a36a', '#f59e0b', '#8b5cf6', '#ef4444'],
-        borderWidth: 2,
-        borderColor: '#ffffff',
-      }],
+      datasets: [
+        {
+          data: dados.map((item) => item.quantidade),
+          label: 'Quantidade de empenhos',
+          backgroundColor: ['#f59e0b', '#16a36a', '#8b5cf6'],
+          borderWidth: 2,
+          borderColor: '#ffffff',
+        },
+      ],
     });
   }
 }
