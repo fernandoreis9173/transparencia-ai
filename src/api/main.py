@@ -1,6 +1,7 @@
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from src.api.routes.chat import router as chat_router
 
 from src.api.routes.analytics import router as analytics_router
 
@@ -16,12 +17,12 @@ app.add_middleware(
         "http://localhost:4200",
     ],
     allow_credentials=False,
-    allow_methods=["GET"],
+    allow_methods=["GET", "POST"],
     allow_headers=["*"],
 )
 
 app.include_router(analytics_router)
-
+app.include_router(chat_router)
 
 @app.get("/api/health")
 def health_check():

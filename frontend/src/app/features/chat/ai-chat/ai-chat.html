@@ -1,1 +1,126 @@
-<p>ai-chat works!</p>
+
+<section class="chat-container">
+  <header class="chat-header">
+    <div class="chat-icon">
+      <i class="bi bi-robot"></i>
+    </div>
+
+    <div>
+      <h2>Assistente de Despesas Públicas</h2>
+      <p>
+        Faça perguntas sobre os dados de execução das despesas públicas.
+      </p>
+    </div>
+  </header>
+
+  <div class="chat-messages" aria-live="polite">
+    @if (mensagens().length === 0) {
+      <div class="chat-empty">
+        <i class="bi bi-chat-square-text"></i>
+        <h3>Como posso ajudar?</h3>
+        <p>Experimente perguntar:</p>
+
+        <ul>
+          <li>Qual é o total empenhado e o total pago?</li>
+          <li>Quais são os maiores empenhos?</li>
+          <li>Existem registros sinalizados para análise?</li>
+          <li>Como está a situação dos pagamentos?</li>
+        </ul>
+      </div>
+    }
+
+    @for (
+      mensagem of mensagens();
+      track rastrearMensagem($index, mensagem)
+    ) {
+      <article class="message">
+        <div class="user-message">
+          <span class="message-label">Você</span>
+          <p>{{ mensagem.pergunta }}</p>
+        </div>
+
+        <div class="assistant-message">
+          <span class="message-label">
+            <i class="bi bi-robot"></i>
+            Assistente
+          </span>
+
+          @if (mensagem.carregando) {
+            <div class="loading-message">
+              <span class="spinner-border spinner-border-sm"
+                    role="status"
+                    aria-hidden="true"></span>
+              <span>Consultando os dados e preparando a resposta...</span>
+            </div>
+          }
+
+          @if (mensagem.resposta) {
+            <div class="response-text">{{ mensagem.resposta }}</div>
+
+            @if (mensagem.provedor) {
+              <div class="provider-label">
+                <i class="bi bi-cpu"></i>
+                Provedor: {{ nomeProvedor(mensagem.provedor) }}
+              </div>
+            }
+
+            @if (mensagem.aviso) {
+              <div class="sample-warning">
+                <i class="bi bi-info-circle"></i>
+                {{ mensagem.aviso }}
+              </div>
+            }
+          }
+
+          @if (mensagem.erro) {
+            <div class="error-message" role="alert">
+              <i class="bi bi-exclamation-triangle"></i>
+              {{ mensagem.erro }}
+            </div>
+          }
+        </div>
+      </article>
+    }
+  </div>
+
+  @if (erroGeral()) {
+    <div class="error-message" role="alert">
+      {{ erroGeral() }}
+    </div>
+  }
+
+  <form class="chat-form" (ngSubmit)="enviarPergunta()">
+    <input
+      type="text"
+      name="pergunta"
+      class="form-control"
+      placeholder="Digite sua pergunta sobre as despesas..."
+      [(ngModel)]="pergunta"
+      [disabled]="carregando()"
+      maxlength="1000"
+      autocomplete="off"
+      required
+      aria-label="Pergunta para o assistente"
+    />
+
+    <button
+      type="submit"
+      class="btn btn-primary"
+      [disabled]="carregando() || !pergunta.trim()"
+      aria-label="Enviar pergunta"
+    >
+      @if (carregando()) {
+        <span class="spinner-border spinner-border-sm"
+              aria-hidden="true"></span>
+      } @else {
+        <i class="bi bi-send"></i>
+      }
+      <span>Enviar</span>
+    </button>
+  </form>
+
+  <footer class="chat-footer">
+    As respostas são baseadas nos dados retornados pela API.
+    Confira o aviso sobre a amostra em cada resposta.
+  </footer>
+</section>

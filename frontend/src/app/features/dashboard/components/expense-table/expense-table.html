@@ -1,0 +1,104 @@
+<section class="expense-card">
+  <header class="expense-header">
+    <div>
+      <h2>Maiores empenhos</h2>
+      <p>Registros com os maiores valores empenhados</p>
+    </div>
+
+    <button
+      type="button"
+      class="btn btn-outline-primary btn-sm"
+      (click)="carregarEmpenhos()"
+      [disabled]="carregando()"
+    >
+      <i class="bi bi-arrow-clockwise me-1"></i>
+      Atualizar
+    </button>
+  </header>
+
+  @if (carregando()) {
+    <div class="table-state">
+      <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+      <span>Carregando empenhos...</span>
+    </div>
+  } @else if (erro()) {
+    <div class="alert alert-danger m-3">
+      Não foi possível carregar os empenhos.
+      <button class="btn btn-sm btn-outline-danger ms-2" (click)="carregarEmpenhos()">
+        Tentar novamente
+      </button>
+    </div>
+  } @else if (empenhos().length === 0) {
+    <div class="table-state">Nenhum empenho encontrado.</div>
+  } @else {
+    <div class="table-responsive">
+      <table class="table align-middle expense-table">
+        <thead>
+          <tr>
+            <th>Empenho / Data</th>
+            <th>Favorecido</th>
+            <th>Unidade orçamentária</th>
+            <th class="text-end">Empenhado</th>
+            <th class="text-end">Liquidado</th>
+            <th class="text-end">Pago</th>
+            <th>Situação</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          @for (item of empenhos(); track item.num_empenho) {
+            <tr>
+              <td>
+                <strong class="empenho-number">
+                  {{ item.num_empenho }}
+                </strong>
+                <small class="d-block text-secondary">
+                  {{ item.data_registro_empenho | date: 'dd/MM/yyyy' }}
+                </small>
+              </td>
+
+              <td class="favorecido">
+                {{ item.nome_favorecido }}
+              </td>
+
+              <td class="unidade">
+                {{ item.nome_uo }}
+              </td>
+
+              <td class="text-end money">
+                {{ item.vl_empenhado | currency: 'BRL' : 'symbol' : '1.2-2' : 'pt-BR' }}
+              </td>
+
+              <td class="text-end money">
+                {{ item.vl_liquidado | currency: 'BRL' : 'symbol' : '1.2-2' : 'pt-BR' }}
+              </td>
+
+              <td class="text-end money">
+                {{ item.vl_pago | currency: 'BRL' : 'symbol' : '1.2-2' : 'pt-BR' }}
+              </td>
+
+              <td>
+                @if (item.liquidado_maior_que_empenhado) {
+                  <span class="status-badge status-warning">
+                    <i class="bi bi-exclamation-triangle me-1"></i>
+                    Verificar valores
+                  </span>
+                } @else if (item.vl_pago >= item.vl_empenhado && item.vl_empenhado > 0) {
+                  <span class="status-badge status-paid"> Pago integralmente </span>
+                } @else if (item.vl_pago > 0) {
+                  <span class="status-badge status-partial"> Pagamento parcial </span>
+                } @else {
+                  <span class="status-badge status-pending"> Sem valor pago registrado </span>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <footer class="expense-footer">
+      Exibindo {{ empenhos().length }} registros retornados pela API.
+    </footer>
+  }
+</section>

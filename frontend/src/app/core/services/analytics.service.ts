@@ -16,6 +16,19 @@ export interface ResumoFinanceiro {
   quantidade_anomalias: number;
 }
 
+export interface Empenho {
+  ano_exercicio: number;
+  num_empenho: string;
+  data_registro_empenho: string;
+  nome_orgao: string;
+  nome_uo: string;
+  nome_favorecido: string;
+  vl_empenhado: number;
+  vl_liquidado: number;
+  vl_pago: number;
+  liquidado_maior_que_empenhado: boolean;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -60,4 +73,11 @@ export class AnalyticsService {
       `${this.apiUrl}/anomalias`
     );
   }
+
+  getMaioresEmpenhos(limite = 20) {
+  return this.http.get<Empenho[]>(
+    `${this.apiUrl}/maiores-empenhos`,
+    { params: { limite } }
+  );
+}
 }
