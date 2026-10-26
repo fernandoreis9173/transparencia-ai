@@ -2,6 +2,7 @@
 import json
 import os
 import re
+import unicodedata
 
 from dotenv import load_dotenv
 from fastapi import HTTPException
@@ -43,26 +44,86 @@ def obter_cliente():
     return client
 
 
+def normalizar_texto(texto: str) -> str:
+    """Converte para minúsculas, remove acentos e normaliza espaços."""
+    texto = texto.casefold()
+    texto = unicodedata.normalize("NFD", texto)
+    texto = "".join(
+    caractere
+    for caractere in texto
+    if unicodedata.category(caractere) != "Mn"
+    )
+    return re.sub(r"\s+", " ", texto).strip()
+
 def classificar_pergunta(pergunta: str) -> str:
     """
-    Classifica perguntas com regras locais.
+    Classifica perguntas usando regras locais.
     Não depende da disponibilidade do Gemini.
     """
-    texto = pergunta.casefold()
-    texto = re.sub(r"\s+", " ", texto).strip()
+    texto = normalizar_texto(pergunta)
 
+    # 1. Anomalias e possíveis inconsistências
     if any(p in texto for p in (
         "anomalia",
-        "anomalias",
         "irregularidade",
-        "irregularidades",
         "liquidado maior",
         "maior que o empenhado",
-        "precisam de verificação",
-        "precisa de verificação",
+        "precisam de verificacao",
+        "precisa de verificacao",
+        "valores inconsistentes",
+        "despesas suspeitas",
     )):
         return "anomalias"
 
+    # 2. Situação dos pagamentos
+    if any(p in texto for p in (
+        "situacao de pagamento",
+        "situacao dos pagamentos",
+        "como estao os pagamentos",
+        "como esta a situacao dos pagamentos",
+        "pagamentos pendentes",
+        "pendentes",
+        "quantos foram pagos",
+        "foram pagos",
+        "quantos empenhos foram pagos",
+        "quantos estao pagos",
+        "nao foram pagos",
+        "pagamento parcial",
+    )):
+        return "situacao_pagamento"
+
+    # 3. Evolução mensal
+    if any(p in texto for p in (
+        "evolucao mensal",
+        "por mes",
+        "mensal",
+        "ao longo dos meses",
+        "evolucao ao longo do tempo",
+        "historico mensal",
+    )):
+        return "evolucao_mensal"
+
+    # 4. Unidades orçamentárias
+    if any(p in texto for p in (
+        "unidade orcamentaria",
+        "unidades orcamentarias",
+        "por unidade",
+        "quais unidades",
+    )):
+        return "unidades"
+
+    # 5. Maiores empenhos individuais
+    if any(p in texto for p in (
+        "maiores empenhos",
+        "maior empenho",
+        "empenhos individuais",
+        "empenhos mais altos",
+        "empenhos de maior valor",
+        "empenho mais caro",
+    )):
+        return "maiores_empenhos"
+
+    # 6. Favorecidos e fornecedores
     if any(p in texto for p in (
         "favorecido",
         "favorecidos",
@@ -70,57 +131,20 @@ def classificar_pergunta(pergunta: str) -> str:
         "fornecedores",
         "quem recebeu",
         "quem recebeu mais",
+        "maiores beneficiarios",
+        "beneficiarios que mais receberam",
+        "ranking de fornecedores",
     )):
         return "top_favorecidos"
 
-    if any(p in texto for p in (
-        "situação de pagamento",
-        "situacao de pagamento",
-        "não foram pagos",
-        "nao foram pagos",
-        "não foi pago",
-        "nao foi pago",
-        "ainda não pago",
-        "ainda nao pago",
-        "pagamentos pendentes",
-        "pagamento parcial",
-        "quantos foram pagos",
-    )):
-        return "situacao_pagamento"
-
-    if any(p in texto for p in (
-        "evolução mensal",
-        "evolucao mensal",
-        "por mês",
-        "por mes",
-        "mensal",
-        "ao longo dos meses",
-    )):
-        return "evolucao_mensal"
-
-    if any(p in texto for p in (
-        "unidade orçamentária",
-        "unidade orcamentaria",
-        "unidades orçamentárias",
-        "unidades orcamentarias",
-    )):
-        return "unidades"
-
-    if any(p in texto for p in (
-        "maiores empenhos",
-        "maior empenho",
-        "empenhos individuais",
-        "empenhos mais altos",
-    )):
-        return "maiores_empenhos"
-
+    # 7. Perguntas gerais sobre despesas
     return "resumo"
 
 
 def gerar_resposta(
     pergunta: str,
     intencao: str,
-    dados: list[dict],
+    dados: list[dict] | dict,
     filtros_aplicados: dict,
 ) -> str:
     """
@@ -180,7 +204,7 @@ Dados retornados pelo PostgreSQL (JSON):
             contents=instrucoes,
             config=types.GenerateContentConfig(
                 temperature=0.2,
-                max_output_tokens=700,
+                max_output_tokens=2048,
             ),
         )
 

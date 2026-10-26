@@ -7,10 +7,13 @@
 
   <div class="header-actions">
     <span class="filter-chip">
-      <i class="bi bi-calendar3"></i> Exercício 2025
+      <i class="bi bi-calendar3"></i>
+      Exercício {{ filtrosChat.ano_exercicio ?? 'Todos' }}
     </span>
-    <button class="btn btn-primary">
-      <i class="bi bi-download me-2"></i>Exportar relatório
+
+    <button type="button" class="btn btn-primary">
+      <i class="bi bi-download me-2"></i>
+      Exportar relatório
     </button>
   </div>
 </header>
@@ -23,15 +26,139 @@
   </span>
 </div>
 
-<app-financial-summary></app-financial-summary>
+<!-- Filtros do dashboard e do assistente -->
+<section class="dashboard-filters">
+  <div class="filters-heading">
+    <div>
+      <h2>Filtros da consulta</h2>
+      <p>
+        As perguntas ao assistente utilizarão os filtros selecionados.
+      </p>
+    </div>
 
+    <button
+      type="button"
+      class="btn btn-outline-secondary btn-sm"
+      (click)="limparFiltros()"
+    >
+      <i class="bi bi-x-circle me-1"></i>
+      Limpar filtros
+    </button>
+  </div>
+
+  <div class="row g-3">
+    <!-- Ano de exercício -->
+    <div class="col-12 col-md-4">
+      <label for="anoExercicio" class="form-label">
+        Ano de exercício
+      </label>
+
+      <select
+        id="anoExercicio"
+        name="anoExercicio"
+        class="form-select"
+        [(ngModel)]="filtrosChat.ano_exercicio"
+        (ngModelChange)="aplicarFiltros()"
+      >
+        <option [ngValue]="null">Todos os anos</option>
+        <option [ngValue]="2025">2025</option>
+      </select>
+    </div>
+
+    <!-- Unidade orçamentária -->
+    <div class="col-12 col-md-4">
+      <label for="codUo" class="form-label">
+        Código da unidade orçamentária
+      </label>
+
+      <input
+        id="codUo"
+        name="codUo"
+        type="text"
+        class="form-control"
+        placeholder="Digite o código da UO"
+        maxlength="30"
+        [(ngModel)]="filtrosChat.cod_uo"
+        (change)="aplicarFiltros()"
+      />
+    </div>
+
+    <!-- Favorecido -->
+    <div class="col-12 col-md-4">
+      <label for="favorecido" class="form-label">
+        Favorecido
+      </label>
+
+      <input
+        id="favorecido"
+        name="favorecido"
+        type="text"
+        class="form-control"
+        placeholder="Nome do favorecido"
+        maxlength="200"
+        [(ngModel)]="filtrosChat.nome_favorecido"
+        (change)="aplicarFiltros()"
+      />
+    </div>
+
+    <!-- Situação do pagamento -->
+    <div class="col-12 col-md-6">
+      <label for="situacaoPagamento" class="form-label">
+        Situação do pagamento
+      </label>
+
+      <select
+        id="situacaoPagamento"
+        name="situacaoPagamento"
+        class="form-select"
+        [(ngModel)]="filtrosChat.situacao_pagamento"
+        (ngModelChange)="aplicarFiltros()"
+      >
+        <option [ngValue]="null">Todas as situações</option>
+        <option value="NAO_PAGO">Não pago</option>
+        <option value="PAGAMENTO_PARCIAL">Pagamento parcial</option>
+        <option value="PAGO">Pago</option>
+      </select>
+    </div>
+
+    <!-- Filtro de anomalias -->
+    <div class="col-12 col-md-6 d-flex align-items-end">
+      <div class="form-check mb-2">
+        <input
+          id="apenasAnomalias"
+          name="apenasAnomalias"
+          type="checkbox"
+          class="form-check-input"
+          [(ngModel)]="filtrosChat.apenas_anomalias"
+          (ngModelChange)="aplicarFiltros()"
+        />
+
+        <label for="apenasAnomalias" class="form-check-label">
+          Exibir apenas registros sinalizados para análise
+        </label>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Indicadores financeiros -->
+<app-financial-summary
+  [filtros]="filtrosChat"
+></app-financial-summary>
+
+<!-- Gráficos, tabela e assistente -->
 <div class="dashboard-content">
   <section class="dashboard-data">
-    <app-expense-charts></app-expense-charts>
-    <app-expense-table></app-expense-table>
+    <app-expense-charts
+      [filtros]="filtrosChat"
+    ></app-expense-charts>
+
+    <app-expense-table
+      [filtros]="filtrosChat"
+    ></app-expense-table>
   </section>
 
   <aside class="dashboard-chat">
-    <app-ai-chat></app-ai-chat>
+    <app-ai-chat [filtros]="filtrosChat"></app-ai-chat>
   </aside>
 </div>

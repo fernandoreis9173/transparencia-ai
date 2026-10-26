@@ -82,3 +82,55 @@
     flex-wrap: wrap;
   }
 }
+
+
+.dashboard-filters {
+  margin-bottom: 24px;
+  padding: 20px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+
+  .filters-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 20px;
+
+    h2 {
+      margin: 0 0 5px;
+      font-size: 17px;
+      font-weight: 600;
+      color: #1f2937;
+    }
+
+    p {
+      margin: 0;
+      font-size: 13px;
+      color: #6b7280;
+    }
+  }
+
+  .form-label {
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .form-control,
+  .form-select {
+    min-height: 40px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 576px) {
+  .dashboard-filters {
+    padding: 14px;
+
+    .filters-heading {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+  }
+}

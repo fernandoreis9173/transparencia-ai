@@ -1,6 +1,6 @@
 
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 export interface ResumoFinanceiro {
@@ -29,6 +29,14 @@ export interface Empenho {
   liquidado_maior_que_empenhado: boolean;
 }
 
+export interface FiltrosAnalytics {
+  ano_exercicio?: number | null;
+  cod_uo?: string | null;
+  nome_favorecido?: string | null;
+  situacao_pagamento?: 'NAO_PAGO' | 'PAGAMENTO_PARCIAL' | 'PAGO' | null;
+  apenas_anomalias?: boolean | null;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -38,46 +46,83 @@ export class AnalyticsService {
 
   private readonly apiUrl = 'http://localhost:8000/api/analytics';
 
-  getResumo(): Observable<ResumoFinanceiro> {
-    return this.http.get<ResumoFinanceiro>(
-      `${this.apiUrl}/resumo`
-    );
+  private montarParametros(filtros: FiltrosAnalytics = {}): HttpParams {
+  let params = new HttpParams();
+
+  if (filtros.ano_exercicio != null) {
+    params = params.set('ano_exercicio', filtros.ano_exercicio);
   }
 
-  getOrgaos(): Observable<Record<string, unknown>[]> {
-    return this.http.get<Record<string, unknown>[]>(
-      `${this.apiUrl}/orgaos`
-    );
+  if (filtros.cod_uo?.trim()) {
+    params = params.set('cod_uo', filtros.cod_uo.trim());
   }
 
-  getUnidades(): Observable<Record<string, unknown>[]> {
-    return this.http.get<Record<string, unknown>[]>(
-      `${this.apiUrl}/unidades`
-    );
+  if (filtros.nome_favorecido?.trim()) {
+    params = params.set('nome_favorecido', filtros.nome_favorecido.trim());
   }
 
-  getEvolucaoMensal(): Observable<Record<string, unknown>[]> {
-    return this.http.get<Record<string, unknown>[]>(
-      `${this.apiUrl}/evolucao-mensal`
-    );
+  if (filtros.situacao_pagamento) {
+    params = params.set('situacao_pagamento', filtros.situacao_pagamento);
   }
 
-  getSituacaoPagamento(): Observable<Record<string, unknown>[]> {
-    return this.http.get<Record<string, unknown>[]>(
-      `${this.apiUrl}/situacao-pagamento`
-    );
+  if (filtros.apenas_anomalias != null) {
+    params = params.set('apenas_anomalias', filtros.apenas_anomalias);
   }
 
-  getAnomalias(): Observable<Record<string, unknown>[]> {
-    return this.http.get<Record<string, unknown>[]>(
-      `${this.apiUrl}/anomalias`
-    );
-  }
+  return params;
+}
 
-  getMaioresEmpenhos(limite = 20) {
+  getResumo(filtros: FiltrosAnalytics = {}): Observable<ResumoFinanceiro> {
+  return this.http.get<ResumoFinanceiro>(
+    `${this.apiUrl}/resumo`,
+    { params: this.montarParametros(filtros) }
+  );
+}
+
+getOrgaos(filtros: FiltrosAnalytics = {}): Observable<Record<string, unknown>[]> {
+  return this.http.get<Record<string, unknown>[]>(
+    `${this.apiUrl}/orgaos`,
+    { params: this.montarParametros(filtros) }
+  );
+}
+
+getUnidades(filtros: FiltrosAnalytics = {}): Observable<Record<string, unknown>[]> {
+  return this.http.get<Record<string, unknown>[]>(
+    `${this.apiUrl}/unidades`,
+    { params: this.montarParametros(filtros) }
+  );
+}
+
+getEvolucaoMensal(filtros: FiltrosAnalytics = {}): Observable<Record<string, unknown>[]> {
+  return this.http.get<Record<string, unknown>[]>(
+    `${this.apiUrl}/evolucao-mensal`,
+    { params: this.montarParametros(filtros) }
+  );
+}
+
+getSituacaoPagamento(filtros: FiltrosAnalytics = {}): Observable<Record<string, unknown>[]> {
+  return this.http.get<Record<string, unknown>[]>(
+    `${this.apiUrl}/situacao-pagamento`,
+    { params: this.montarParametros(filtros) }
+  );
+}
+
+getAnomalias(filtros: FiltrosAnalytics = {}): Observable<Record<string, unknown>[]> {
+  return this.http.get<Record<string, unknown>[]>(
+    `${this.apiUrl}/anomalias`,
+    { params: this.montarParametros(filtros) }
+  );
+}
+
+getMaioresEmpenhos(
+  limite = 20,
+  filtros: FiltrosAnalytics = {}
+): Observable<Empenho[]> {
+  const params = this.montarParametros(filtros).set('limite', limite);
+
   return this.http.get<Empenho[]>(
     `${this.apiUrl}/maiores-empenhos`,
-    { params: { limite } }
+    { params }
   );
 }
 }

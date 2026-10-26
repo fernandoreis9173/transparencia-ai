@@ -13,7 +13,7 @@ MODEL = os.getenv("OPENAI_MODEL", "gpt-4.1-mini")
 def gerar_resposta_openai(
     pergunta: str,
     intencao: str,
-    dados: list,
+    dados: list | dict,
     filtros_aplicados: dict,
 ) -> str:
     if not API_KEY:

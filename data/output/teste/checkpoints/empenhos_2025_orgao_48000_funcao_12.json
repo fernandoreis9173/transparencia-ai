@@ -1,0 +1,21 @@
+{
+  "versao": 2,
+  "indice": 46,
+  "processados": 1,
+  "erros": 0,
+  "inicio": "2026-10-22T17:05:08",
+  "ultima_atualizacao": "2026-10-22T17:05:11",
+  "registros": {
+    "45": {
+      "status": "com_dados",
+      "tentativas": 1,
+      "atualizado_em": "2026-10-22T17:05:11",
+      "cpf_cnpj": "32691514000127",
+      "nome": "2M-COMERCIO DE ELETROELETRONICOS LTDA",
+      "quantidade": 11,
+      "arquivo": "32691514000127.csv",
+      "duplicatas_removidas": 0
+    }
+  },
+  "falhas": []
+}

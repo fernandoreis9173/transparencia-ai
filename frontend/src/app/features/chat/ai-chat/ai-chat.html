@@ -24,7 +24,7 @@
           <li>Qual é o total empenhado e o total pago?</li>
           <li>Quais são os maiores empenhos?</li>
           <li>Existem registros sinalizados para análise?</li>
-          <li>Como está a situação dos pagamentos?</li>
+          <li>Quais pagamentos estão pendentes?</li>
         </ul>
       </div>
     }
@@ -47,15 +47,84 @@
 
           @if (mensagem.carregando) {
             <div class="loading-message">
-              <span class="spinner-border spinner-border-sm"
-                    role="status"
-                    aria-hidden="true"></span>
+              <span
+                class="spinner-border spinner-border-sm"
+                role="status"
+                aria-hidden="true"
+              ></span>
               <span>Consultando os dados e preparando a resposta...</span>
             </div>
           }
 
-          @if (mensagem.resposta) {
-            <div class="response-text">{{ mensagem.resposta }}</div>
+          @if (mensagem.resposta && !mensagem.carregando) {
+            <div class="response-text">
+              {{ respostaExibida(mensagem) }}
+            </div>
+
+            @if (temTabelaEmpenhos(mensagem)) {
+              <div class="table-responsive mt-3">
+                <table class="table table-sm table-hover align-middle">
+                  <thead>
+                    <tr>
+                      <th scope="col">Empenho</th>
+                      <th scope="col">Favorecido</th>
+                      <th scope="col">Situação</th>
+                      <th scope="col" class="text-end">Empenhado</th>
+                      <th scope="col" class="text-end">Liquidado</th>
+                      <th scope="col" class="text-end">Pago</th>
+
+                      @if (mensagem.intencao === 'anomalias') {
+                        <th scope="col" class="text-end">
+                          Diferença
+                        </th>
+                      }
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    @for (item of mensagem.dados ?? []; track $index) {
+                      @if (item['num_empenho'] != null) {
+                        <tr>
+                          <td>{{ item['num_empenho'] }}</td>
+                          <td>{{ item['nome_favorecido'] ?? '—' }}</td>
+                          <td>{{ item['situacao_pagamento'] ?? '—' }}</td>
+
+                          <td class="text-end">
+                            {{ formatarMoeda(item['vl_empenhado']) }}
+                          </td>
+
+                          <td class="text-end">
+                            {{ formatarMoeda(item['vl_liquidado']) }}
+                          </td>
+
+                          <td class="text-end">
+                            {{ formatarMoeda(item['vl_pago']) }}
+                          </td>
+
+                          @if (mensagem.intencao === 'anomalias') {
+                            <td class="text-end">
+                              {{ formatarDiferenca(item) }}
+                            </td>
+                          }
+                        </tr>
+                      }
+                    }
+                  </tbody>
+                </table>
+              </div>
+
+              @if (
+                mensagem.quantidadeResultados !== undefined &&
+                mensagem.quantidadeResultados > (mensagem.dados?.length ?? 0)
+              ) {
+                <p class="text-muted small">
+                  A consulta retornou
+                  {{ mensagem.quantidadeResultados }} registros.
+                  A tabela apresenta os registros individuais disponíveis
+                  nesta resposta.
+                </p>
+              }
+            }
 
             @if (mensagem.provedor) {
               <div class="provider-label">
@@ -110,8 +179,10 @@
       aria-label="Enviar pergunta"
     >
       @if (carregando()) {
-        <span class="spinner-border spinner-border-sm"
-              aria-hidden="true"></span>
+        <span
+          class="spinner-border spinner-border-sm"
+          aria-hidden="true"
+        ></span>
       } @else {
         <i class="bi bi-send"></i>
       }

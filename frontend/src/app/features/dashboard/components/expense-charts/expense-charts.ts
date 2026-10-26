@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges, inject, signal } from '@angular/core';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartData, ChartOptions } from 'chart.js';
 import { forkJoin } from 'rxjs';
-import { AnalyticsService } from '../../../../core/services/analytics.service';
+import { AnalyticsService, FiltrosAnalytics } from '../../../../core/services/analytics.service';
 
 type Row = Record<string, unknown>;
 
@@ -14,7 +14,7 @@ type Row = Record<string, unknown>;
   templateUrl: './expense-charts.html',
   styleUrl: './expense-charts.scss',
 })
-export class ExpenseCharts implements OnInit {
+export class ExpenseCharts implements OnInit, OnChanges {
   private readonly analytics = inject(AnalyticsService);
 
   carregando = signal(true);
@@ -79,6 +79,14 @@ export class ExpenseCharts implements OnInit {
     plugins: { legend: { position: 'bottom' } },
   };
 
+  @Input() filtros: FiltrosAnalytics = {};
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['filtros'] && !changes['filtros'].firstChange) {
+      this.carregarGraficos();
+    }
+  }
+
   ngOnInit(): void {
     this.carregarGraficos();
   }
@@ -88,9 +96,9 @@ export class ExpenseCharts implements OnInit {
     this.erro.set(false);
 
     forkJoin({
-      unidades: this.analytics.getUnidades(),
-      mensal: this.analytics.getEvolucaoMensal(),
-      pagamentos: this.analytics.getSituacaoPagamento(),
+      unidades: this.analytics.getUnidades(this.filtros),
+      mensal: this.analytics.getEvolucaoMensal(this.filtros),
+      pagamentos: this.analytics.getSituacaoPagamento(this.filtros),
     }).subscribe({
       next: (resposta) => {
         const unidades = this.extrairLinhas(resposta.unidades);

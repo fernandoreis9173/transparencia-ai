@@ -24,6 +24,7 @@ export interface PerguntaChatResponse {
   provedor: string;
   intencao: string;
   quantidade_resultados: number;
+  total_pendentes?: number | null;
   dados: Record<string, unknown>[];
   aviso: string;
 }
