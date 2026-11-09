@@ -5,7 +5,6 @@ import re
 import unicodedata
 
 from dotenv import load_dotenv
-from fastapi import HTTPException
 from google import genai
 from google.genai import types
 
@@ -215,8 +214,6 @@ Dados retornados pelo PostgreSQL (JSON):
 
         return texto
 
-    except HTTPException:
-        raise
     except Exception as erro:
         print(f"Erro ao gerar resposta com Gemini: {erro}")
 

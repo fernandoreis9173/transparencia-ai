@@ -287,26 +287,37 @@ class DespesasExtractor:
     # Paginação
     # ------------------------------------------------------------------
 
+    
     def buscar_todas_paginas(
         self,
         *,
         ano: int,
         tipo_retorno: str,
         page_size: int = 50,
+        chave_contagem: tuple[str, ...] | None = None,
         **filtros,
     ) -> list[dict[str, Any]]:
         """
-        Busca todas as páginas e só devolve o resultado se a paginação
-        estiver completa e coerente com os totais informados pela API.
+        Busca todas as páginas.
 
-        Lista vazia significa SOMENTE "consulta válida com zero
-        registros" (totalItems == 0). Qualquer outra situação
-        incompatível levanta uma exceção.
+        chave_contagem=None:
+            totalItems representa a quantidade de linhas.
+
+        chave_contagem=("num_empenho",):
+            totalItems representa a quantidade de empenhos distintos.
+            Todas as linhas retornadas são preservadas.
         """
 
         registros: list[dict[str, Any]] = []
         total_esperado: int | None = None
         pagina = 1
+        chaves_encontradas: set[tuple] = set()
+
+        def quantidade_validada() -> int:
+            if chave_contagem is None:
+                return len(registros)
+
+            return len(chaves_encontradas)
 
         while True:
             if pagina > MAX_PAGINAS:
@@ -325,6 +336,23 @@ class DespesasExtractor:
             items, total, total_pages, has_next, size_resp = (
                 self._validar_pagina(resposta)
             )
+            
+            chaves_pagina = {
+                item.get("num_empenho")
+                for item in items
+                if item.get("num_empenho") is not None
+            }
+            
+            print(
+                "\nDIAGNÓSTICO DA API"
+                f"\nPágina: {pagina}"
+                f"\nLinhas recebidas: {len(items)}"
+                f"\nEmpenhos distintos na página: {len(chaves_pagina)}"
+                f"\ntotalItems: {total}"
+                f"\ntotalPages: {total_pages}"
+                f"\npageSize: {size_resp}"
+                f"\nhasNext: {has_next}"
+            )
 
             if total_esperado is None:
                 total_esperado = total
@@ -340,52 +368,74 @@ class DespesasExtractor:
             if total_pages is not None and total_pages != paginas_esperadas:
                 raise PaginacaoInconsistenteError(
                     f"totalPages={total_pages} não confere com "
-                    f"totalItems={total_esperado} e pageSize={tamanho} "
-                    f"(esperado {paginas_esperadas})."
-                )
-
-            if not items and total_esperado > len(registros):
-                raise PaginacaoInconsistenteError(
-                    f"Página {pagina} vazia, mas a API informa "
-                    f"{total_esperado} registros e só {len(registros)} "
-                    f"foram recebidos."
+                    f"totalItems={total_esperado} e pageSize={tamanho}."
                 )
 
             registros.extend(items)
 
-            if len(registros) > total_esperado:
+            if chave_contagem is not None:
+                for item in items:
+                    valores = tuple(item.get(campo) for campo in chave_contagem)
+
+                    if any(valor is None for valor in valores):
+                        raise PaginacaoInconsistenteError(
+                            f"Chave de contagem incompleta na página {pagina}: "
+                            f"{valores}."
+                        )
+
+                    chaves_encontradas.add(valores)
+
+            quantidade = quantidade_validada()
+
+            if not items and quantidade < total_esperado:
                 raise PaginacaoInconsistenteError(
-                    f"Recebidos {len(registros)} registros, mais do que "
-                    f"os {total_esperado} informados pela API."
+                    f"Página {pagina} vazia. "
+                    f"Total validado: {quantidade}/{total_esperado}."
                 )
 
             continua = pagina < paginas_esperadas
 
             if has_next is not None and has_next != continua:
                 raise PaginacaoInconsistenteError(
-                    f"hasNext={has_next} contradiz a página {pagina} de "
-                    f"{paginas_esperadas}."
+                    f"hasNext={has_next} contradiz a página "
+                    f"{pagina} de {paginas_esperadas}."
                 )
 
             print(
                 f"Página {pagina}/{max(paginas_esperadas, 1)}: "
-                f"{len(items)} registros"
+                f"{len(items)} linhas | "
+                f"{quantidade} registros validados"
             )
 
             if not continua:
                 break
 
             pagina += 1
+            
+        print("CHAVE DE CONTAGEM:", chave_contagem)
+        print("TOTAL DE LINHAS:", len(registros))
+        print("TOTAL DE NUM_EMpenho DISTINTOS:", len({
+            item.get("num_empenho")
+            for item in registros
+        }))
+        print("TOTAL DE CHAVES VALIDADAS:", len(chaves_encontradas))
 
-        if len(registros) != total_esperado:
+        quantidade_final = quantidade_validada()
+
+        if quantidade_final != total_esperado:
             raise PaginacaoInconsistenteError(
-                f"Paginação incompleta: {len(registros)} de "
-                f"{total_esperado} registros."
+                f"Paginação incompleta: {quantidade_final} de "
+                f"{total_esperado} registros validados. "
+                f"Linhas recebidas: {len(registros)}."
             )
 
-        print(f"Total coletado: {len(registros)} (esperado {total_esperado})")
+        print(
+            f"Total coletado: {len(registros)} linhas | "
+            f"{quantidade_final} registros validados"
+        )
 
         return registros
+
 
     def buscar_favorecidos(
         self,
@@ -412,30 +462,113 @@ class DespesasExtractor:
         df: pd.DataFrame,
     ) -> tuple[pd.DataFrame, int]:
         """
-        Remove linhas idênticas repetidas entre páginas.
+        Remove duplicatas exatas e valida a identidade do empenho.
 
-        A chave do empenho é (ano_exercicio, cod_uo, num_empenho), usando
-        as colunas existentes. Duplicata exata é descartada; a mesma chave
-        com conteúdo diferente levanta DuplicidadeConflitanteError, pois
-        descartar um dos registros seria perda silenciosa de dados.
+        A identidade considera:
+        ano_exercicio, cod_orgao, cod_uo, num_empenho e num_processo.
+
+        Registros sem os campos necessários para identificar o empenho
+        não são descartados: geram erro para investigação.
         """
 
-        chave = [c for c in CHAVE_EMPENHO if c in df.columns]
-
-        if "num_empenho" not in chave or df.empty:
+        if df.empty:
             return df, 0
 
+        chave = [
+            "ano_exercicio",
+            "cod_orgao",
+            "cod_uo",
+            "num_empenho",
+            "num_processo",
+        ]
+
+        # Verifica se todas as colunas necessárias existem.
+        colunas_ausentes = [
+            coluna for coluna in chave
+            if coluna not in df.columns
+        ]
+
+        if colunas_ausentes:
+            raise DuplicidadeConflitanteError(
+                "Não foi possível validar a identidade dos empenhos. "
+                f"Colunas ausentes: {colunas_ausentes}."
+            )
+
+        # Remove somente registros completamente idênticos.
         exatas = df.duplicated(keep="first")
         removidas = int(exatas.sum())
-        df = df.loc[~exatas]
 
-        conflitos = df.duplicated(subset=chave, keep=False)
+        df = df.loc[~exatas].copy()
+
+        # Verifica campos nulos ou vazios na chave de identificação.
+        campos_invalidos = pd.DataFrame(index=df.index)
+
+        for coluna in chave:
+            invalidos = df[coluna].isna()
+
+            if pd.api.types.is_string_dtype(df[coluna]):
+                invalidos |= df[coluna].str.strip().eq("")
+
+            campos_invalidos[coluna] = invalidos
+
+        linhas_invalidas = campos_invalidos.any(axis=1)
+
+        if linhas_invalidas.any():
+            exemplos = df.loc[
+                linhas_invalidas,
+                chave
+            ].head(5)
+
+            raise DuplicidadeConflitanteError(
+                f"{int(linhas_invalidas.sum())} registros possuem "
+                "campos ausentes ou vazios na chave de identificação. "
+                f"Campos: {chave}. "
+                f"Exemplos: {exemplos.to_dict(orient='records')}."
+            )
+
+        # Identifica conflitos na chave completa.
+        conflitos = df.duplicated(
+            subset=chave,
+            keep=False
+        )
 
         if conflitos.any():
-            exemplo = df.loc[conflitos, chave].iloc[0].to_dict()
+            grupos = df.loc[conflitos].groupby(
+                chave,
+                dropna=False
+            )
+
+            for identificador, registros_grupo in grupos:
+                if len(registros_grupo) <= 1:
+                    continue
+
+                divergentes = [
+                    coluna
+                    for coluna in df.columns
+                    if registros_grupo[coluna].nunique(
+                        dropna=False
+                    ) > 1
+                ]
+
+                if divergentes:
+                    print("\nDUPLICIDADE CONFLITANTE")
+                    print(f"Chave: {identificador}")
+                    print(f"Colunas divergentes: {divergentes}")
+
+                    colunas_exibicao = list(
+                        dict.fromkeys(chave + divergentes)
+                    )
+
+                    print(
+                        registros_grupo[colunas_exibicao]
+                        .to_string(index=False)
+                    )
+
+                    break
+
             raise DuplicidadeConflitanteError(
-                f"{int(conflitos.sum())} linhas compartilham a chave "
-                f"{chave} com conteúdos diferentes. Exemplo: {exemplo}."
+                f"{int(conflitos.sum())} linhas compartilham "
+                f"a chave {chave} com conteúdos diferentes."
             )
 
         return df.reset_index(drop=True), removidas
@@ -464,6 +597,7 @@ class DespesasExtractor:
             ano=ano,
             tipo_retorno="favorecido",
             page_size=page_size,
+            chave_contagem=None,
             **filtros,
         )
 

@@ -424,3 +424,36 @@ LEFT JOIN core.acao a
 
 LEFT JOIN core.tipo_licitacao tl
     ON tl.id = f.tipo_licitacao_id;
+
+
+-- ============================================================
+-- VIEW ANALÍTICA ENRIQUECIDA (usada pela API e pela IA)
+-- ============================================================
+
+CREATE OR REPLACE VIEW analytics.vw_despesas_analitica AS
+SELECT
+    d.*,
+
+    COALESCE(d.vl_liquidado, 0) - COALESCE(d.vl_pago, 0)
+        AS valor_liquidado_nao_pago,
+
+    COALESCE(d.vl_empenhado, 0) - COALESCE(d.vl_pago, 0)
+        AS valor_empenhado_nao_pago,
+
+    CASE
+        WHEN COALESCE(d.vl_empenhado, 0) > 0
+        THEN ROUND(d.vl_liquidado / d.vl_empenhado * 100, 2)
+    END AS percentual_liquidado,
+
+    CASE
+        WHEN COALESCE(d.vl_empenhado, 0) > 0
+        THEN ROUND(d.vl_pago / d.vl_empenhado * 100, 2)
+    END AS percentual_pago,
+
+    CASE
+        WHEN COALESCE(d.vl_pago, 0) = 0 THEN 'NAO_PAGO'
+        WHEN d.vl_pago < d.vl_liquidado THEN 'PAGAMENTO_PARCIAL'
+        ELSE 'PAGO'
+    END AS situacao_pagamento
+
+FROM analytics.vw_despesas d;
